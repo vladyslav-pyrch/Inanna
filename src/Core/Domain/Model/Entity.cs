@@ -1,4 +1,6 @@
-﻿namespace Inanna.Core.Domain.Model;
+﻿using MediatR;
+
+namespace Inanna.Core.Domain.Model;
 
 public abstract class Entity<TIdentity> : IEntity<TIdentity> where TIdentity : ValueObject, IIdentity
 {
@@ -11,7 +13,7 @@ public abstract class Entity<TIdentity> : IEntity<TIdentity> where TIdentity : V
 
     public TIdentity Id { get; }
     
-    public void PublishDomainEvents(IDomainEventPublisher publisher)
+    public void PublishDomainEvents(IMediator publisher)
     {
         foreach (IDomainEvent domainEvent in _domainEvents)
             publisher.Publish(domainEvent);

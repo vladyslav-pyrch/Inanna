@@ -1,6 +1,8 @@
-﻿namespace Inanna.Core.Domain.Model;
+﻿using MediatR;
 
-public interface IDomainEvent
+namespace Inanna.Core.Domain.Model;
+
+public interface IDomainEvent : INotification
 {
     public string AggregateSource { get; }
     
