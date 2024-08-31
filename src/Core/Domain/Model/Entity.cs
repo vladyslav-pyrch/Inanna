@@ -26,8 +26,6 @@ public abstract class Entity<TIdentity> : IEntity<TIdentity> where TIdentity : V
         _domainEvents.Add(domainEvent);
     }
 
-    protected string AggregateSource() => GetType().Name;
-
     private void ResetDomainEvents()
     {
         _domainEvents.Clear();
