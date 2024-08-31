@@ -12,15 +12,18 @@ public class Manga : Entity<MangaId>
 
     private List<VolumeId> _volumes;
 
+    private List<Genre> _genres;
+
     private Status _status;
 
     private Publisher _publisher;
     
-    public Manga(MangaId identity, string title, Image cover, Status status, Publisher publisher, List<VolumeId> volumes) : base(identity)
+    public Manga(MangaId identity, string title, Image cover, Status status, Publisher publisher, List<Genre> genres, List<VolumeId> volumes) : base(identity)
     {
         Title = title;
         Cover = cover;
         Volumes = volumes;
+        Genres = genres;
         Status = status;
         Publisher = publisher;
     }
@@ -62,6 +65,12 @@ public class Manga : Entity<MangaId>
         get => [.._volumes];
         private set => _volumes = value ?? throw new ArgumentException("Volume list cannot be null.");
     }
+    
+    public List<Genre> Genres 
+    {
+        get => [.._genres];
+        private set => _genres = value ?? throw new ArgumentException("Volume list cannot be null.");
+    }
 
     public int NumberOfVolumes => _volumes.Count;
 
@@ -99,5 +108,21 @@ public class Manga : Entity<MangaId>
             throw new InvalidOperationException("There is no such volume to delete.");
         
         _volumes.Add(volume);
+    }
+
+    public void AddGenre(Genre genre)
+    {
+        if (_genres.Contains(genre))
+            throw new InvalidOperationException("The genre is already added.");
+        
+        _genres.Add(genre);
+    }
+
+    public void RemoveGenre(Genre genre)
+    {
+        if (!_genres.Contains(genre))
+            throw new InvalidOperationException("There is no such genre to delete.");
+        
+        _genres.Add(genre);
     }
 }
