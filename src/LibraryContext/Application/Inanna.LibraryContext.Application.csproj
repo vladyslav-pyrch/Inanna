@@ -10,4 +10,14 @@
     <ProjectReference Include="..\Domain\Inanna.LibraryContext.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DependencyInjection\" />
+    <Folder Include="Features\Mangas\Commands\Create\" />
+    <Folder Include="Features\Mangas\Commands\Delete\" />
+    <Folder Include="Features\Mangas\Commands\Update\" />
+    <Folder Include="Features\Mangas\Dtos\" />
+    <Folder Include="Features\Mangas\Queries\Get\" />
+    <Folder Include="Features\Mangas\Queries\List\" />
+  </ItemGroup>
+
 </Project>
