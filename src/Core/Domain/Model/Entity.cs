@@ -16,10 +16,10 @@ public abstract class Entity<TIdentity> : IEntity<TIdentity> where TIdentity : V
     public TIdentity Identity
     {
         get => _identity;
-        private init => _identity = value ?? throw new ArgumentException("Identity cannot be null.");
+        private init => _identity = value ?? throw new BusynessRuleException("Identity cannot be null.");
     }
     
-    public void PublishDomainEvents(IMediator publisher)
+    public void PublishDomainEvents(IPublisher publisher)
     {
         foreach (IDomainEvent domainEvent in _domainEvents)
             publisher.Publish(domainEvent);

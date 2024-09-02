@@ -16,8 +16,7 @@ public record Publisher : ValueObject
         get => _id;
         private init
         {
-            if (int.IsNegative(value))
-                throw new ArgumentException("Id cannot be negative.");
+            BusynessRuleException.ThrowIf(() => int.IsNegative(value), "Publisher id value cannot be negative.");
 
             _id = value;
         }

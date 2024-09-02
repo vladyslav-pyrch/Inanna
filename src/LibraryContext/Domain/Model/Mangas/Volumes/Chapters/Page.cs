@@ -20,8 +20,7 @@ public record Page : ValueObject
         get => _number;
         private init
         {
-            if (int.IsNegative(value))
-                throw new ArgumentException("Page number cannot be negative.");
+            BusynessRuleException.ThrowIf(() => int.IsNegative(value), "Page number cannot be negative.");
 
             _number = value;
         }
@@ -30,6 +29,11 @@ public record Page : ValueObject
     public Image Image
     {
         get => _image;
-        private init => _image = value ?? throw new ArgumentException("Page image cannot be null.");
+        private init
+        {
+            BusynessRuleException.ThrowIfNull(value, "Page image cannot be null.");
+
+            _image = value;
+        }
     }
 }

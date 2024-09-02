@@ -19,7 +19,7 @@ public record Image : ValueObject
         get => _path;
         private init
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Image path cannot be null or white space.");
 
             _path = value;
         }
@@ -30,10 +30,10 @@ public record Image : ValueObject
         get => _contentType;
         private init
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
-
-            if (!MyRegexes.ImageContentTypeRegex().IsMatch(value))
-                throw new ArgumentException("Image content type should be of format \"image/[smth]\"");
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value,
+                "Image content type cannot be null or white space.");
+            BusynessRuleException.ThrowIf(() => !MyRegexes.ImageContentTypeRegex().IsMatch(value), 
+                "Image content type should be of format \"image/[smth]\"");
 
             _contentType = value;
         }

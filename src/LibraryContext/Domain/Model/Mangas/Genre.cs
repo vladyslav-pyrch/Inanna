@@ -16,10 +16,8 @@ public record Genre : ValueObject
         get => _name;
         private init
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
-
-            if (value.Length > 20)
-                throw new ArgumentException("Name cannot be longer than 20 characters.");
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Genre name cannot be null or white space.");
+            BusynessRuleException.ThrowIfShorterThan(value, 20, "Name cannot be longer than 20 characters.");
 
             _name = value;
         }

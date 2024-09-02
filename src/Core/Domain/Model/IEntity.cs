@@ -6,5 +6,5 @@ public interface IEntity<out TIdentity> where TIdentity : ValueObject, IIdentity
 {
     public TIdentity Identity { get; }
     
-    public void PublishDomainEvents(IMediator publisher);
+    public void PublishDomainEvents(IPublisher publisher);
 }

@@ -36,11 +36,10 @@ public class Chapter : Entity<ChapterId>
         get => _number;
         private set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Chapter number cannot be null or white space.");
+            BusynessRuleException.ThrowIf(() => !MyRegexes.NumberRegex().IsMatch(value), 
+                "Number should be a positive integer or a positive decimal.");
             
-            if (!MyRegexes.NumberRegex().IsMatch(value))
-                throw new ArgumentException("Number should be a positive integer or a positive decimal.");
-
             _number = value;
         }
     }
@@ -48,7 +47,12 @@ public class Chapter : Entity<ChapterId>
     public List<Page> Pages
     {
         get => [.._pages];
-        private set => _pages = value ?? throw new ArgumentNullException();
+        private set
+        {
+            BusynessRuleException.ThrowIfNull(value, "Pages list cannot be null.");
+            
+            _pages = value;
+        }
     }
 
     public void ChangeTitle(string title)
@@ -63,16 +67,14 @@ public class Chapter : Entity<ChapterId>
 
     public void AddPage(Page page)
     {
-        if (_pages.Contains(page))
-            throw new InvalidOperationException("The page is already added.");
+        BusynessRuleException.ThrowIf(() => _pages.Contains(page), "The page is already added.");
         
         _pages.Add(page);
     }
 
     public void DeletePage(Page page)
     {
-        if (!_pages.Contains(page))
-            throw new InvalidOperationException("There is no such page to delete.");
+        BusynessRuleException.ThrowIf(() => !_pages.Contains(page), "There is no such page to delete.");
         
         _pages.Add(page);
     }

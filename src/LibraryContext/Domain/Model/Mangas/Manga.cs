@@ -33,10 +33,8 @@ public class Manga : Entity<MangaId>
         get => _title;
         private set
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value);
-
-            if (value.Length > 100)
-                throw new ArgumentException("Title cannot be longer than 100 characters.");
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Title should not be null or white space.");
+            BusynessRuleException.ThrowIfLongerThan(value, 100, "Title cannot be longer than 100 characters.");
 
             _title = value;
         }
@@ -57,19 +55,34 @@ public class Manga : Entity<MangaId>
     public Publisher Publisher
     {
         get => _publisher;
-        private set => _publisher = value ?? throw new ArgumentException();
+        private set
+        {
+            BusynessRuleException.ThrowIfNull(value, "Publisher cannot be null.");
+            
+            _publisher = value;
+        }
     }
-    
+
     public List<VolumeId> Volumes
     {
         get => [.._volumes];
-        private set => _volumes = value ?? throw new ArgumentException("Volumes list cannot be null.");
+        private set
+        {
+            BusynessRuleException.ThrowIfNull(value, "Volumes list cannot be null.");
+
+            _volumes = value;
+        }
     }
-    
-    public List<Genre> Genres 
+
+    public List<Genre> Genres
     {
         get => [.._genres];
-        private set => _genres = value ?? throw new ArgumentException("Genres list cannot be null.");
+        private set
+        {
+            BusynessRuleException.ThrowIfNull(value, "Genres list cannot be null.");
+            
+            _genres = value;
+        }
     }
 
     public int NumberOfVolumes => _volumes.Count;
@@ -96,32 +109,28 @@ public class Manga : Entity<MangaId>
 
     public void AddVolume(VolumeId volume)
     {
-        if (_volumes.Contains(volume))
-            throw new InvalidOperationException("The volume is already added.");
+        BusynessRuleException.ThrowIf(() => _volumes.Contains(volume), "The volume is already added.");
         
         _volumes.Add(volume);
     }
 
     public void RemoveVolume(VolumeId volume)
     {
-        if (!_volumes.Contains(volume))
-            throw new InvalidOperationException("There is no such volume to delete.");
+        BusynessRuleException.ThrowIf(() => !_volumes.Contains(volume), "There is no such volume to delete.");
         
         _volumes.Add(volume);
     }
 
     public void AddGenre(Genre genre)
     {
-        if (_genres.Contains(genre))
-            throw new InvalidOperationException("The genre is already added.");
+        BusynessRuleException.ThrowIf(() => _genres.Contains(genre), "The genre is already added.");
         
         _genres.Add(genre);
     }
 
     public void RemoveGenre(Genre genre)
     {
-        if (!_genres.Contains(genre))
-            throw new InvalidOperationException("There is no such genre to delete.");
+        BusynessRuleException.ThrowIf(() => !_genres.Contains(genre), "There is no such genre to delete.");
         
         _genres.Add(genre);
     }
