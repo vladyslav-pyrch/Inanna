@@ -1,4 +1,6 @@
 using Inanna.LibraryContext.Api.Services;
+using Inanna.LibraryContext.Application;
+using Inanna.LibraryContext.Infrastructure;
 using Inanna.LibraryContext.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,12 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
-builder.Services.AddDbContext<LibraryDbContext>((provider, optionsBuilder) =>
-{
-    var configuration = provider.GetRequiredService<IConfiguration>();
-    string connectionString = configuration.GetConnectionString("Database") ?? throw new NullReferenceException();
-    optionsBuilder.UseSqlServer(connectionString);
-});
+builder.Services.AddInfrastructureModule();
+builder.Services.AddApplicationModule();
 
 var app = builder.Build();
 

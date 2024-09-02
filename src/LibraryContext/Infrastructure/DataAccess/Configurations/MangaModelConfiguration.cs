@@ -14,6 +14,10 @@ public class MangaModelConfiguration : IEntityTypeConfiguration<MangaModel>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(model => model.State)
+            .IsRequired()
+            .HasMaxLength(20);
+
         builder.Property(model => model.PublisherId)
             .IsRequired();
 

@@ -6,6 +6,8 @@ public class MangaModel
     
     public string Title { get; set; }
     
+    public string State { get; set; }
+    
     public ImageModel Cover { get; set; }
     
     public int PublisherId { get; set; }
