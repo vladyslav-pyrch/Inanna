@@ -8,7 +8,7 @@ public class Manga : Entity<MangaId>
 {
     private string _title;
 
-    private Image _cover;
+    private Image? _cover;
 
     private List<VolumeId> _volumes;
 
@@ -18,7 +18,7 @@ public class Manga : Entity<MangaId>
 
     private Publisher _publisher;
     
-    public Manga(MangaId identity, string title, Image cover, Status status, Publisher publisher, List<Genre> genres, List<VolumeId> volumes) : base(identity)
+    public Manga(MangaId identity, string title, Status status, Publisher publisher, Image? cover, List<Genre> genres, List<VolumeId> volumes) : base(identity)
     {
         Title = title;
         Cover = cover;
@@ -42,34 +42,34 @@ public class Manga : Entity<MangaId>
         }
     }
 
-    public Image Cover
+    public Image? Cover
     {
         get => _cover;
-        private set => _cover = value ?? throw new ArgumentException("Cover cannot be null.");
+        private set => _cover = value;
     }
 
     public Status Status
     {
         get => _status;
-        private set => _status = value ?? throw new ArgumentNullException();
+        private set => _status = value;
     }
 
     public Publisher Publisher
     {
         get => _publisher;
-        private set => _publisher = value ?? throw new ArgumentNullException();
+        private set => _publisher = value ?? throw new ArgumentException();
     }
     
     public List<VolumeId> Volumes
     {
         get => [.._volumes];
-        private set => _volumes = value ?? throw new ArgumentException("Volume list cannot be null.");
+        private set => _volumes = value ?? throw new ArgumentException("Volumes list cannot be null.");
     }
     
     public List<Genre> Genres 
     {
         get => [.._genres];
-        private set => _genres = value ?? throw new ArgumentException("Volume list cannot be null.");
+        private set => _genres = value ?? throw new ArgumentException("Genres list cannot be null.");
     }
 
     public int NumberOfVolumes => _volumes.Count;

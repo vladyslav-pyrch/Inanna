@@ -4,14 +4,20 @@ namespace Inanna.Core.Domain.Model;
 
 public abstract class Entity<TIdentity> : IEntity<TIdentity> where TIdentity : ValueObject, IIdentity
 {
+    private readonly TIdentity _identity;
+    
     private readonly List<IDomainEvent> _domainEvents = [];
 
     protected Entity(TIdentity identity)
     {
-        Id = identity;
+        Identity = identity;
     }
 
-    public TIdentity Id { get; }
+    public TIdentity Identity
+    {
+        get => _identity;
+        private init => _identity = value ?? throw new ArgumentException("Identity cannot be null.");
+    }
     
     public void PublishDomainEvents(IMediator publisher)
     {

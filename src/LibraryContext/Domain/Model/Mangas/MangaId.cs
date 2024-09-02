@@ -1,5 +1,5 @@
-﻿using Inanna.Core.Domain.Model;
+﻿using Inanna.LibraryContext.Domain.Model.Shared;
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
-public record MangaId(int Value) : Identity<int>(Value);
+public record MangaId(int Value) : IntegerIdentity(Value);
