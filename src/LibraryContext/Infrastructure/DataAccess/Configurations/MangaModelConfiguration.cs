@@ -21,8 +21,13 @@ public class MangaModelConfiguration : IEntityTypeConfiguration<MangaModel>
         builder.Property(model => model.PublisherId)
             .IsRequired();
 
-        builder.HasMany(model => model.Genres)
-            .WithMany(model => model.Mangas);
+        builder.OwnsMany(model => model.Genres, navigationBuilder =>
+        {
+            navigationBuilder.Property(model => model.Name)
+                .IsRequired()
+                .HasMaxLength(20);
+            navigationBuilder.WithOwner();
+        });
 
         builder.HasMany(model => model.Volumes)
             .WithOne(model => model.Manga)
