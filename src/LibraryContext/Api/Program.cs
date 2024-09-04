@@ -2,26 +2,41 @@ using Inanna.LibraryContext.Api.Services;
 using Inanna.LibraryContext.Application;
 using Inanna.LibraryContext.Infrastructure;
 using Inanna.LibraryContext.Infrastructure.DataAccess;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddGrpc();
+builder.Services.AddGrpc().AddJsonTranscoding();
+builder.Services.AddGrpcSwagger();
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "gRPC transcoding", Version = "v1" });
+    
+    string file = Path.Combine(AppContext.BaseDirectory, "Inanna.LibraryContext.Api.xml");
+    c.IncludeXmlComments(file);
+    c.IncludeGrpcXmlComments(file);
+});
 builder.Services.AddInfrastructureModule();
 builder.Services.AddApplicationModule();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-
-using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+using (IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 {
     var context = serviceScope.ServiceProvider.GetRequiredService<LibraryDbContext>();
     context.Database.EnsureCreated();
 }
 
+app.UseSwagger();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwaggerUI(c => {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    });
+}
+
 // Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
+app.MapGrpcService<MangaService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
 app.Run();

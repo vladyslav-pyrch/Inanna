@@ -14,17 +14,17 @@ public class Manga : Entity<MangaId>
 
     private List<Genre> _genres;
 
-    private Status _status;
+    private State _state;
 
     private Publisher _publisher;
     
-    public Manga(MangaId identity, string title, Status status, Publisher publisher, Image? cover, List<Genre> genres, List<VolumeId> volumes) : base(identity)
+    public Manga(MangaId identity, string title, State state, Publisher publisher, Image? cover, List<Genre> genres, List<VolumeId> volumes) : base(identity)
     {
         Title = title;
         Cover = cover;
         Volumes = volumes;
         Genres = genres;
-        Status = status;
+        State = state;
         Publisher = publisher;
     }
 
@@ -46,10 +46,10 @@ public class Manga : Entity<MangaId>
         private set => _cover = value;
     }
 
-    public Status Status
+    public State State
     {
-        get => _status;
-        private set => _status = value;
+        get => _state;
+        private set => _state = value;
     }
 
     public Publisher Publisher
@@ -97,9 +97,9 @@ public class Manga : Entity<MangaId>
         Cover = newCover;
     }
 
-    public void ChangeStatus(Status newStatus)
+    public void ChangeStatus(State newState)
     {
-        Status = newStatus;
+        State = newState;
     }
 
     public void ChangePublisher(Publisher newPublisher)

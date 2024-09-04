@@ -1,6 +1,6 @@
 ﻿namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
-public enum Status
+public enum State
 {
     Publishing,
     Completed,

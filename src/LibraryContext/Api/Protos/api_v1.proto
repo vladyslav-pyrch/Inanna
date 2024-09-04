@@ -1,0 +1,36 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Inanna.LibraryContext.Api";
+
+import "google/protobuf/wrappers.proto";
+import "google/api/annotations.proto";
+
+package api_v1;
+
+service MangaService {
+  rpc CreateManga (CreateMangaRequest) returns (CreateMangaResponse) {
+    option (google.api.http) = {
+      post: "/v1/CreateManga"
+      body: "*"
+    };
+  };
+}
+//state
+enum State {
+    Publishing = 0;
+    Completed = 1;
+    Deprecated = 2;
+}
+
+message CreateMangaRequest {
+  string title = 1;
+  State state = 2;
+  int32 publisher_id = 3;
+  google.protobuf.BytesValue cover_bytes = 4;
+  google.protobuf.StringValue cover_content_type = 5;
+  repeated string genres = 6;
+}
+
+message CreateMangaResponse {
+  int32 manga_id = 1;
+}

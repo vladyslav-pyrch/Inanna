@@ -17,7 +17,7 @@ public record Genre : ValueObject
         private init
         {
             BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Genre name cannot be null or white space.");
-            BusynessRuleException.ThrowIfShorterThan(value, 20, "Name cannot be longer than 20 characters.");
+            BusynessRuleException.ThrowIfLongerThan(value, 20, "Name cannot be longer than 20 characters.");
 
             _name = value;
         }
