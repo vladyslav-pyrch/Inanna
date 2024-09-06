@@ -1,6 +1,6 @@
 ﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
 
-public class MangaModel
+internal class MangaModel
 {
     public int Id { get; set; }
     
@@ -8,11 +8,11 @@ public class MangaModel
     
     public string State { get; set; }
     
-    public ImageModel Cover { get; set; }
+    public ImageModel? Cover { get; set; }
     
     public int PublisherId { get; set; }
 
-    public IEnumerable<GenreModel> Genres { get; set; }
+    public ICollection<GenreModel> Genres { get; set; }
     
-    public IEnumerable<VolumeModel> Volumes { get; set; }
+    public ICollection<VolumeModel> Volumes { get; set; }
 }

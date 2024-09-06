@@ -1,7 +1,7 @@
 using Inanna.LibraryContext.Api.Services;
 using Inanna.LibraryContext.Application;
 using Inanna.LibraryContext.Infrastructure;
-using Inanna.LibraryContext.Infrastructure.DataAccess;
+using Inanna.LibraryContext.Application.DataAccess;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

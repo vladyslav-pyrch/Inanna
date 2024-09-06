@@ -1,6 +1,8 @@
 ﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
 
-public class GenreModel
+internal class GenreModel
 {
     public string Name { get; set; }
+    
+    public ICollection<MangaModel> Mangas { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
 
-public class ImageModel
+internal class ImageModel
 {
     public string Path { get; set; }
     

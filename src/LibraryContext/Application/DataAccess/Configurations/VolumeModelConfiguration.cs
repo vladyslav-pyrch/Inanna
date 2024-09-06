@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Inanna.LibraryContext.Infrastructure.DataAccess.Configurations;
+namespace Inanna.LibraryContext.Application.DataAccess.Configurations;
 
-public class VolumeModelConfiguration : IEntityTypeConfiguration<VolumeModel>
+internal class VolumeModelConfiguration : IEntityTypeConfiguration<VolumeModel>
 {
     public void Configure(EntityTypeBuilder<VolumeModel> builder)
     {
@@ -19,12 +19,10 @@ public class VolumeModelConfiguration : IEntityTypeConfiguration<VolumeModel>
 
         builder.HasOne(model => model.Manga)
             .WithMany(model => model.Volumes)
-            .HasForeignKey(model => model.MangaId)
-            .IsRequired();
+            .HasForeignKey(model => model.MangaId);
 
         builder.HasMany(model => model.Chapters)
             .WithOne(model => model.Volume)
-            .HasForeignKey(model => model.VolumeId)
-            .IsRequired();
+            .HasForeignKey(model => model.VolumeId);
     }
 }

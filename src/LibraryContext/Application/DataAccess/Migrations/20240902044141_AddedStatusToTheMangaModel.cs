@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
+namespace Inanna.LibraryContext.Application.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class AddedStatusToTheMangaModel : Migration

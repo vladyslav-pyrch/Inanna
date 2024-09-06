@@ -1,6 +1,6 @@
 ﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
 
-public class ChapterModel
+internal class VolumeModel
 {
     public int Id { get; set; }
     
@@ -8,9 +8,9 @@ public class ChapterModel
     
     public string Number { get; set; }
     
-    public VolumeModel Volume { get; set; }
+    public MangaModel Manga { get; set; }
     
-    public int VolumeId { get; set; }
+    public int? MangaId { get; set; }
     
-    public IEnumerable<PageModel> Pages { get; set; }
+    public ICollection<ChapterModel> Chapters { get; set; }
 }

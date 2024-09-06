@@ -14,6 +14,12 @@ service MangaService {
       body: "*"
     };
   };
+  rpc AddNewVolumeToManga (AddNewVolumeToMangaRequest) returns (AddNewVolumeToMangaResponse) {
+    option (google.api.http) = {
+      post: "/v1/AddNewVolumeToManga/{manga_id}"
+      body: "new_volume"
+    };
+  };
 }
 //state
 enum State {
@@ -33,4 +39,17 @@ message CreateMangaRequest {
 
 message CreateMangaResponse {
   int32 manga_id = 1;
+}
+
+message AddNewVolumeToMangaRequest {
+  int32 manga_id = 1;
+  NewVolume new_volume = 2;
+}
+message NewVolume {
+  string title = 1;
+  string number = 2;
+}
+
+message AddNewVolumeToMangaResponse {
+  int32 volume_id = 1;
 }

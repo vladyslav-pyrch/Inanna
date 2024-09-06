@@ -11,7 +11,7 @@ public static class CustomValidators
     public static IRuleBuilderOptions<T, string?> HaveMatchWithRegex<T>(this IRuleBuilder<T, string?> ruleBuilder,
         Regex regex)
     {
-        return ruleBuilder.Must(s => regex.IsMatch(s) || s is null )
+        return ruleBuilder.Must(s => s is null || regex.IsMatch(s) )
             .WithMessage("{PropertyName} does not match the regex.");
     }
     

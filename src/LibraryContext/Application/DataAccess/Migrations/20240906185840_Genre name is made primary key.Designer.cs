@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
+namespace Inanna.LibraryContext.Application.DataAccess.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20240902044141_AddedStatusToTheMangaModel")]
-    partial class AddedStatusToTheMangaModel
+    [Migration("20240906185840_Genre name is made primary key")]
+    partial class Genrenameismadeprimarykey
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,21 +23,6 @@ namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("GenreModelMangaModel", b =>
-                {
-                    b.Property<string>("GenresName")
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("MangasId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenresName", "MangasId");
-
-                    b.HasIndex("MangasId");
-
-                    b.ToTable("GenreModelMangaModel");
-                });
 
             modelBuilder.Entity("Inanna.LibraryContext.Infrastructure.DataAccess.Models.ChapterModel", b =>
                 {
@@ -64,17 +49,6 @@ namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
                     b.HasIndex("VolumeId");
 
                     b.ToTable("Chapters");
-                });
-
-            modelBuilder.Entity("Inanna.LibraryContext.Infrastructure.DataAccess.Models.GenreModel", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Name");
-
-                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("Inanna.LibraryContext.Infrastructure.DataAccess.Models.MangaModel", b =>
@@ -128,21 +102,6 @@ namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
                     b.HasIndex("MangaId");
 
                     b.ToTable("Volumes");
-                });
-
-            modelBuilder.Entity("GenreModelMangaModel", b =>
-                {
-                    b.HasOne("Inanna.LibraryContext.Infrastructure.DataAccess.Models.GenreModel", null)
-                        .WithMany()
-                        .HasForeignKey("GenresName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Inanna.LibraryContext.Infrastructure.DataAccess.Models.MangaModel", null)
-                        .WithMany()
-                        .HasForeignKey("MangasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Inanna.LibraryContext.Infrastructure.DataAccess.Models.ChapterModel", b =>
@@ -210,6 +169,25 @@ namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
 
             modelBuilder.Entity("Inanna.LibraryContext.Infrastructure.DataAccess.Models.MangaModel", b =>
                 {
+                    b.OwnsMany("Inanna.LibraryContext.Infrastructure.DataAccess.Models.GenreModel", "Genres", b1 =>
+                        {
+                            b1.Property<string>("Name")
+                                .HasMaxLength(20)
+                                .HasColumnType("nvarchar(20)");
+
+                            b1.Property<int>("MangaModelId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("Name");
+
+                            b1.HasIndex("MangaModelId");
+
+                            b1.ToTable("Genres");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MangaModelId");
+                        });
+
                     b.OwnsOne("Inanna.LibraryContext.Infrastructure.DataAccess.Models.ImageModel", "Cover", b1 =>
                         {
                             b1.Property<int>("MangaModelId")
@@ -233,6 +211,8 @@ namespace Inanna.LibraryContext.Infrastructure.DataAccess.Migrations
 
                     b.Navigation("Cover")
                         .IsRequired();
+
+                    b.Navigation("Genres");
                 });
 
             modelBuilder.Entity("Inanna.LibraryContext.Infrastructure.DataAccess.Models.VolumeModel", b =>

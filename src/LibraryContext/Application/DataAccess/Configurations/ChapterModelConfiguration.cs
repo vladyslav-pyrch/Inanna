@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Inanna.LibraryContext.Infrastructure.DataAccess.Configurations;
+namespace Inanna.LibraryContext.Application.DataAccess.Configurations;
 
-public class ChapterModelConfiguration : IEntityTypeConfiguration<ChapterModel>
+internal class ChapterModelConfiguration : IEntityTypeConfiguration<ChapterModel>
 {
     public void Configure(EntityTypeBuilder<ChapterModel> builder)
     {
@@ -19,8 +19,7 @@ public class ChapterModelConfiguration : IEntityTypeConfiguration<ChapterModel>
 
         builder.HasOne(model => model.Volume)
             .WithMany(model => model.Chapters)
-            .HasForeignKey(model => model.VolumeId)
-            .IsRequired();
+            .HasForeignKey(model => model.VolumeId);
 
         builder.OwnsMany(model => model.Pages, navigationBuilder =>
         {

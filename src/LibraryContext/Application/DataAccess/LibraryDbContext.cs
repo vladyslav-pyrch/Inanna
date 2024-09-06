@@ -2,17 +2,17 @@
 using Inanna.LibraryContext.Infrastructure.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Inanna.LibraryContext.Infrastructure.DataAccess;
+namespace Inanna.LibraryContext.Application.DataAccess;
 
 public class LibraryDbContext(DbContextOptions<LibraryDbContext> dbContextOptions) : DbContext(dbContextOptions)
 {
-    public DbSet<ChapterModel> Chapters { get; set; }
+    internal DbSet<ChapterModel> Chapters { get; set; }
 
-    public DbSet<VolumeModel> Volumes { get; set; }
+    internal DbSet<VolumeModel> Volumes { get; set; }
         
-    public DbSet<MangaModel> Mangas { get; set; }
+    internal DbSet<MangaModel> Mangas { get; set; }
         
-    public DbSet<GenreModel> Genres { get; set; }
+    internal DbSet<GenreModel> Genres { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

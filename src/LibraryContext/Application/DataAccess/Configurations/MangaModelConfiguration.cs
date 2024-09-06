@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Inanna.LibraryContext.Infrastructure.DataAccess.Configurations;
+namespace Inanna.LibraryContext.Application.DataAccess.Configurations;
 
-public class MangaModelConfiguration : IEntityTypeConfiguration<MangaModel>
+internal class MangaModelConfiguration : IEntityTypeConfiguration<MangaModel>
 {
     public void Configure(EntityTypeBuilder<MangaModel> builder)
     {
@@ -21,18 +21,12 @@ public class MangaModelConfiguration : IEntityTypeConfiguration<MangaModel>
         builder.Property(model => model.PublisherId)
             .IsRequired();
 
-        builder.OwnsMany(model => model.Genres, navigationBuilder =>
-        {
-            navigationBuilder.Property(model => model.Name)
-                .IsRequired()
-                .HasMaxLength(20);
-            navigationBuilder.WithOwner();
-        });
-
         builder.HasMany(model => model.Volumes)
             .WithOne(model => model.Manga)
-            .HasForeignKey(model => model.MangaId)
-            .IsRequired();
+            .HasForeignKey(model => model.MangaId);
+
+        builder.HasMany(model => model.Genres)
+            .WithMany(model => model.Mangas);
 
         builder.OwnsOne(model => model.Cover, navigationBuilder =>
         {

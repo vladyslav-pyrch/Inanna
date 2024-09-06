@@ -1,6 +1,6 @@
 ﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
 
-public class PageModel
+internal class PageModel
 {
     public int Id { get; set; }
     
@@ -9,5 +9,6 @@ public class PageModel
     public ImageModel Image { get; set; }
     
     public ChapterModel Chapter { get; set; }
-    public int ChapterId { get; set; }
+    
+    public int? ChapterId { get; set; }
 }
