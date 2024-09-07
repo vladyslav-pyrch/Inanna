@@ -8,7 +8,7 @@ internal class VolumeModel
     
     public string Number { get; set; }
     
-    public MangaModel Manga { get; set; }
+    public MangaModel? Manga { get; set; }
     
     public int? MangaId { get; set; }
     

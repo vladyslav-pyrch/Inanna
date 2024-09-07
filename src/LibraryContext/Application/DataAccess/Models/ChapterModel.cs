@@ -8,7 +8,7 @@ internal class ChapterModel
     
     public string Number { get; set; }
     
-    public VolumeModel Volume { get; set; }
+    public VolumeModel? Volume { get; set; }
     
     public int? VolumeId { get; set; }
     

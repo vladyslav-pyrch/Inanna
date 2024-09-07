@@ -26,7 +26,7 @@ public class CreateMangaCommandHandler(LibraryDbContext dbContext, IImageFileSer
                 cover,
                 genres,
                 []
-            ));
+            ), cancellationToken);
         }
         finally
         {
@@ -45,7 +45,7 @@ public class CreateMangaCommandHandler(LibraryDbContext dbContext, IImageFileSer
         return await imageFileService.SaveImage(coverImageBytes, coverImageContentType);
     }
 
-    private async Task<MangaId> AddNewMangaToDb(Manga manga)
+    private async Task<MangaId> AddNewMangaToDb(Manga manga, CancellationToken cancellationToken)
     {
         var mangaModel = new MangaModel
         {
@@ -55,25 +55,14 @@ public class CreateMangaCommandHandler(LibraryDbContext dbContext, IImageFileSer
             Cover = manga.Cover is not null ? new ImageModel
                 {
                     Path = manga.Cover.Path, ContentType = manga.Cover.ContentType
-                } : null
+                } : null,
+            Genres = manga.Genres
+                .Select(genre => dbContext.Genres.AsNoTracking().First(model => model.Name == genre.Name))
+                .ToList(),
         };
-        await dbContext.Mangas.AddAsync(mangaModel);
         
-        foreach (Genre genre in manga.Genres)
-        {
-            GenreModel? genreModel = await dbContext.Genres.Include(model => model.Mangas)
-                .FirstOrDefaultAsync(model => model.Name == genre.Name);
-            
-            if (genreModel is null)
-            {
-                genreModel = new GenreModel { Name = genre.Name, Mangas = [] };
-                await dbContext.AddAsync(genreModel);
-            }
-            
-            genreModel.Mangas.Add(mangaModel);
-        }
-
-        await dbContext.SaveChangesAsync();
+        await dbContext.Mangas.AddAsync(mangaModel, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return new MangaId(mangaModel.Id);
     }

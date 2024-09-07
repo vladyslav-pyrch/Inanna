@@ -8,7 +8,7 @@ internal class PageModel
     
     public ImageModel Image { get; set; }
     
-    public ChapterModel Chapter { get; set; }
+    public ChapterModel? Chapter { get; set; }
     
     public int? ChapterId { get; set; }
 }
