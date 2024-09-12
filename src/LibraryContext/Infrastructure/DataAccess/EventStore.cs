@@ -1,10 +1,11 @@
 ﻿using Inanna.Core.Domain.Model;
-using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 namespace Inanna.LibraryContext.Infrastructure.DataAccess;
 
-public class EventStore(MongoClient client) : IEventStore
+public class EventStore(IMongoClient client) : IEventStore
 {
     public async Task<List<IDomainEvent<TIdentity>>> RetrieveEvents<TIdentity>(TIdentity aggregateRootId,
         CancellationToken cancellationToken = default) where TIdentity : AbstractIdentity
@@ -15,8 +16,8 @@ public class EventStore(MongoClient client) : IEventStore
             cancellationToken: cancellationToken);
         List<StoredEvent> stagedEvents = await cursor.ToListAsync(cancellationToken: cancellationToken); 
 
-        return stagedEvents.Select(@event => (IDomainEvent<TIdentity>)@event.Event)
-            .OrderBy(@event => @event.OccuredOn)
+        return stagedEvents.OrderBy(@event => @event.Position)
+            .Select(@event => (IDomainEvent<TIdentity>)@event.Event)
             .ToList();
     }
 
@@ -26,14 +27,49 @@ public class EventStore(MongoClient client) : IEventStore
         IMongoCollection<StoredEvent> collection = client.GetDatabase("InannaEventStore")
             .GetCollection<StoredEvent>("Events");
 
+        int position = Sequence.GetNextSequenceValue("Events", client.GetDatabase("InannaEventStore"));
+
         var storedEvent = new StoredEvent
         {
             Id = Guid.NewGuid(),
             AggregateRootId = domainEvent.AggregateRootId,
+            Position = position,
             OccuredOn = domainEvent.OccuredOn,
             Event = domainEvent
         };
 
         await collection.InsertOneAsync(storedEvent, cancellationToken: cancellationToken);
+    }
+    
+    internal class Sequence
+    {
+        [BsonId]
+        public ObjectId Id { get; set; }
+        
+        public string Name { get; set; } = "Events";
+
+        public int Value { get; set;  }
+
+        public void Insert(IMongoDatabase database)
+        {
+            var collection = database.GetCollection<Sequence>("sequence");
+            var filter = Builders<Sequence>.Filter.Eq("Name", Name);
+            var update = Builders<Sequence>.Update.SetOnInsert("Name", Name)
+                .SetOnInsert("Value", 1);
+
+            var options = new UpdateOptions { IsUpsert = true };
+
+            collection.UpdateOne(filter, update, options);
+        }
+
+        internal static int GetNextSequenceValue(string sequenceName, IMongoDatabase database)
+        {
+            var collection = database.GetCollection<Sequence>("sequence");
+            var filter = Builders<Sequence>.Filter.Eq(a => a.Name, sequenceName);
+            var update = Builders<Sequence>.Update.Inc(a => a.Value, 1);
+            var sequence = collection.FindOneAndUpdate(filter, update);
+
+            return sequence.Value;
+        }
     }
 }

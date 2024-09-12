@@ -5,6 +5,7 @@ using Inanna.LibraryContext.Domain.Model.Shared;
 using Inanna.LibraryContext.Infrastructure.DataAccess;
 using Inanna.LibraryContext.Infrastructure.DataAccess.Repositories;
 using Inanna.LibraryContext.Infrastructure.FileSystemAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
@@ -20,13 +21,16 @@ public static class InfrastructureModule
     {
         services.AddScoped<IEventStore, EventStore>();
         services.AddScoped<IMangaRepository, MangaRepository>();
-        services.AddScoped<MongoClient>(provider =>
+        services.AddScoped<IMongoClient,MongoClient>(provider =>
         {
             var configuration = provider.GetRequiredService<IConfiguration>();
             string mongoDbConnectionString =
                 configuration.GetConnectionString("EventsDb") ?? throw new Exception("No connection string with the name: EventsDb");
             BsonSerializer.RegisterSerializer(new ObjectSerializer(ObjectSerializer.AllAllowedTypes));
-            return new MongoClient(mongoDbConnectionString);
+            var client = new MongoClient(mongoDbConnectionString);
+            var sequence = new EventStore.Sequence();
+            sequence.Insert(client.GetDatabase("InannaEventStore"));
+            return client;
         });
         services.AddSingleton<IFileService, FileService>(provider =>
         {
