@@ -1,10 +1,12 @@
 ﻿namespace Inanna.Core.Domain.Model;
 
-public abstract record Identity<T> : ValueObject, IIdentity
+public abstract record AbstractIdentity : ValueObject;
+
+public abstract record AbstractIdentity<T> : AbstractIdentity
 {
     private readonly T _value;
 
-    protected Identity(T value)
+    protected AbstractIdentity(T value)
     {
         Value = value;
     }

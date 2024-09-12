@@ -1,4 +1,4 @@
-﻿using Inanna.LibraryContext.Infrastructure.DataAccess.Models;
+﻿using Inanna.LibraryContext.Application.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,12 +17,14 @@ internal class VolumeModelConfiguration : IEntityTypeConfiguration<VolumeModel>
         builder.Property(model => model.Number)
             .IsRequired();
 
-        builder.HasOne(model => model.Manga)
-            .WithMany(model => model.Volumes)
-            .HasForeignKey(model => model.MangaId);
+        builder.HasOne<MangaModel>()
+            .WithMany()
+            .HasForeignKey(model => model.MangaId)
+            .OnDelete(DeleteBehavior.ClientCascade);
 
-        builder.HasMany(model => model.Chapters)
-            .WithOne(model => model.Volume)
-            .HasForeignKey(model => model.VolumeId);
+        builder.HasMany<ChapterModel>()
+            .WithOne()
+            .HasForeignKey(model => model.VolumeId)
+            .OnDelete(DeleteBehavior.ClientCascade);
     }
 }

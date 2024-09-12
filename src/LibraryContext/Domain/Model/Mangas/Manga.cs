@@ -1,36 +1,32 @@
 ﻿using Inanna.Core.Domain.Model;
-using Inanna.LibraryContext.Domain.Model.Mangas.Volumes;
+using Inanna.LibraryContext.Domain.Model.Mangas.Events;
 using Inanna.LibraryContext.Domain.Model.Shared;
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
-public class Manga : Entity<MangaId>
+public class Manga : AggregateRoot<MangaId>
 {
-    private string _title;
+    private string? _title;
 
     private Image? _cover;
 
-    private List<VolumeId> _volumes;
+    private readonly Dictionary<VolumeId, Volume> _volumes = [];
 
-    private List<Genre> _genres;
+    private readonly List<Genre> _genres = [];
 
-    private State _state;
+    private State? _state;
 
-    private Publisher _publisher;
-    
-    public Manga(MangaId identity, string title, State state, Publisher publisher, Image? cover, List<Genre> genres, List<VolumeId> volumes) : base(identity)
+    public Manga() { }
+
+    public Manga(MangaId mangaId)
     {
-        Title = title;
-        Cover = cover;
-        Volumes = volumes;
-        Genres = genres;
-        State = state;
-        Publisher = publisher;
+        Identity = mangaId;
+        Enqueue(new MangaCreated(mangaId));
     }
-
+    
     public string Title
     {
-        get => _title;
+        get => _title ?? BusynessRuleException.AccessingUninitialisedState<string>();
         private set
         {
             BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Title should not be null or white space.");
@@ -48,90 +44,110 @@ public class Manga : Entity<MangaId>
 
     public State State
     {
-        get => _state;
+        get => _state ?? BusynessRuleException.AccessingUninitialisedState<State>();
         private set => _state = value;
     }
 
-    public Publisher Publisher
-    {
-        get => _publisher;
-        private set
-        {
-            BusynessRuleException.ThrowIfNull(value, "Publisher cannot be null.");
-            
-            _publisher = value;
-        }
-    }
+    public IReadOnlyList<Volume> Volumes => _volumes.Values.ToList().AsReadOnly();
 
-    public List<VolumeId> Volumes
-    {
-        get => [.._volumes];
-        private set
-        {
-            BusynessRuleException.ThrowIfNull(value, "Volumes list cannot be null.");
-
-            _volumes = value;
-        }
-    }
-
-    public List<Genre> Genres
-    {
-        get => [.._genres];
-        private set
-        {
-            BusynessRuleException.ThrowIfNull(value, "Genres list cannot be null.");
-            
-            _genres = value;
-        }
-    }
-
-    public int NumberOfVolumes => _volumes.Count;
+    public IReadOnlyList<Genre> Genres => _genres.AsReadOnly();
 
     public void ChangeTitle(string newTitle)
     {
         Title = newTitle;
+        
+        Enqueue(new MangaTitleChanged(newTitle));
     }
 
     public void ChangeCover(Image newCover)
     {
         Cover = newCover;
+        
+        Enqueue(new MangaCoverChanged(newCover));
     }
 
-    public void ChangeStatus(State newState)
+    public void ChangeState(State newState)
     {
         State = newState;
-    }
-
-    public void ChangePublisher(Publisher newPublisher)
-    {
-        Publisher = newPublisher;
-    }
-
-    public void AddVolume(VolumeId volume)
-    {
-        BusynessRuleException.ThrowIf(() => _volumes.Contains(volume), "The volume is already added.");
         
-        _volumes.Add(volume);
+        Enqueue(new MangaStateChanged(newState));
     }
 
-    public void RemoveVolume(VolumeId volume)
+    public void AddVolume(VolumeId volumeId, string title, string number)
     {
-        BusynessRuleException.ThrowIf(() => !_volumes.Contains(volume), "There is no such volume to delete.");
+        title = title.Trim();
+        number = number.Trim();
+        var volume = new Volume(volumeId, title, number);
         
-        _volumes.Add(volume);
+        BusynessRuleException.ThrowIf(() => _volumes.ContainsKey(volumeId),
+            "There is a volume with such an id: {id}", volumeId.Value);
+        BusynessRuleException.ThrowIf(() => _volumes.Values.Any(volume1 => volume1.Title == title), 
+            "There is volume with such a title: {title}", title);
+        BusynessRuleException.ThrowIf(() => _volumes.Values.Any(volume1 => volume1.Number == number),
+            "There is a volume with such a number: {number}", number);
+        
+        _volumes.Add(volumeId, volume);
+        
+        Enqueue(new VolumeAdded(volumeId, title, number));
+    }
+
+    public void RemoveVolume(VolumeId volumeId)
+    {
+        BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
+            "There is no volume with such id: {id}, to delete", volumeId.Value);
+        
+        _volumes.Remove(volumeId);
+        
+        Enqueue(new VolumeRemoved(volumeId));
     }
 
     public void AddGenre(Genre genre)
     {
-        BusynessRuleException.ThrowIf(() => _genres.Contains(genre), "The genre is already added.");
+        BusynessRuleException.ThrowIf(() => _genres.Contains(genre), "The genre is already added");
         
         _genres.Add(genre);
+        
+        Enqueue(new GenreAdded(genre));
     }
 
     public void RemoveGenre(Genre genre)
     {
-        BusynessRuleException.ThrowIf(() => !_genres.Contains(genre), "There is no such genre to delete.");
+        BusynessRuleException.ThrowIf(() => !_genres.Contains(genre), "There is no genre to delete");
         
-        _genres.Add(genre);
+        _genres.Remove(genre);
+        
+        Enqueue(new GenreRemoved(genre));
+    }
+
+    protected override void Evolve(IDomainEvent<MangaId> domainEvent)
+    {
+        switch (domainEvent)
+        {
+            case MangaTitleChanged mangaTitleChanged:
+                Title = mangaTitleChanged.Title;
+                break;
+            case MangaCoverChanged mangaCoverChanged:
+                Cover = mangaCoverChanged.Cover;
+                break;
+            case MangaStateChanged mangaStateChanged:
+                State = mangaStateChanged.State;
+                break;
+            case MangaCreated mangaCreated:
+                Identity = mangaCreated.MangaId;
+                break;
+            case VolumeAdded volumeAdded:
+                var volume = new Volume(volumeAdded.VolumeId, volumeAdded.Title, volumeAdded.Number);
+                _volumes.Add(volumeAdded.VolumeId, volume);
+                break;
+            case VolumeRemoved volumeRemoved:
+                _volumes.Remove(volumeRemoved.VolumeId);
+                break;
+            case GenreAdded genreAdded:
+                _genres.Add(genreAdded.Genre);
+                break;
+            case GenreRemoved genreRemoved:
+                _genres.Remove(genreRemoved.Genre);
+                break;
+        }
     }
 }

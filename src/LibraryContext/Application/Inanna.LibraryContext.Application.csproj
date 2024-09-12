@@ -11,8 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DataAccess\ChangeHandlers\" />
     <Folder Include="Features\Mangas\Commands\Delete\" />
+    <Folder Include="Features\Mangas\Commands\Update\" />
     <Folder Include="Features\Mangas\Dtos\" />
+    <Folder Include="Features\Mangas\Queries\Get\" />
     <Folder Include="Features\Mangas\Queries\List\" />
   </ItemGroup>
 

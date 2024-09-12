@@ -1,4 +1,4 @@
-﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
+﻿namespace Inanna.LibraryContext.Application.DataAccess.Models;
 
 internal class ImageModel
 {

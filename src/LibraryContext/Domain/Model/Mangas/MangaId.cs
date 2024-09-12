@@ -2,4 +2,4 @@
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
-public record MangaId(int Value) : IntegerIdentity(Value);
+public record MangaId(Guid Value) : GuidAbstractIdentity(Value);

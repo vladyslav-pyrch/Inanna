@@ -1,7 +1,7 @@
 ﻿using Inanna.Core.Domain.Model;
 using Inanna.LibraryContext.Domain.Model.Shared;
 
-namespace Inanna.LibraryContext.Domain.Model.Mangas.Volumes.Chapters;
+namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
 public record Page : ValueObject
 {

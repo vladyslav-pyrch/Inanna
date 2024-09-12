@@ -31,14 +31,13 @@ enum State {
 message CreateMangaRequest {
   string title = 1;
   State state = 2;
-  int32 publisher_id = 3;
   google.protobuf.BytesValue cover_bytes = 4;
   google.protobuf.StringValue cover_content_type = 5;
   repeated string genres = 6;
 }
 
 message CreateMangaResponse {
-  int32 manga_id = 1;
+  string manga_id = 1;
 }
 
 message AddNewVolumeToMangaRequest {

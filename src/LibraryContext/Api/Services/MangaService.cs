@@ -1,7 +1,6 @@
 ﻿using Grpc.Core;
 using Inanna.LibraryContext.Application.Features.Mangas.Commands.Create;
 using Inanna.LibraryContext.Domain.Model.Mangas;
-using Inanna.LibraryContext.Domain.Model.Mangas.Volumes;
 using MediatR;
 
 namespace Inanna.LibraryContext.Api.Services;
@@ -13,24 +12,11 @@ public class MangaService(ISender sender) : Api.MangaService.MangaServiceBase
         MangaId mangaId = await sender.Send(new CreateMangaCommand(
             request.Title,
             Enum.Parse<Domain.Model.Mangas.State>(request.State.ToString()),
-            request.PublisherId,
             request.CoverBytes?.ToByteArray(),
             request.CoverContentType,
             request.Genres.ToList()
         ), context.CancellationToken);
 
-        return new CreateMangaResponse { MangaId = mangaId.Value };
-    }
-
-    public override async Task<AddNewVolumeToMangaResponse> AddNewVolumeToManga(AddNewVolumeToMangaRequest request,
-        ServerCallContext context)
-    {
-        VolumeId volumeId = await sender.Send(new AddNewVolumeCommand(
-            request.MangaId,
-            request.NewVolume.Title,
-            request.NewVolume.Number
-        ), context.CancellationToken);
-
-        return new AddNewVolumeToMangaResponse { VolumeId = volumeId.Value };
+        return new CreateMangaResponse { MangaId = mangaId.Value.ToString() };
     }
 }

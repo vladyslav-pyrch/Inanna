@@ -1,4 +1,4 @@
-﻿using Inanna.LibraryContext.Infrastructure.DataAccess.Models;
+﻿using Inanna.LibraryContext.Application.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,12 +21,14 @@ internal class MangaModelConfiguration : IEntityTypeConfiguration<MangaModel>
         builder.Property(model => model.PublisherId)
             .IsRequired();
 
-        builder.HasMany(model => model.Volumes)
-            .WithOne(model => model.Manga)
-            .HasForeignKey(model => model.MangaId);
+        builder.HasMany<VolumeModel>()
+            .WithOne()
+            .HasForeignKey(model => model.MangaId)
+            .OnDelete(DeleteBehavior.ClientCascade);
 
-        builder.HasMany(model => model.Genres)
-            .WithMany(model => model.Mangas);
+        builder.HasMany<GenreModel>()
+            .WithMany()
+            .UsingEntity<GenreToMangaModel>();
 
         builder.OwnsOne(model => model.Cover, navigationBuilder =>
         {

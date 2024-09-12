@@ -1,4 +1,4 @@
-﻿namespace Inanna.LibraryContext.Infrastructure.DataAccess.Models;
+﻿namespace Inanna.LibraryContext.Application.DataAccess.Models;
 
 internal class MangaModel
 {
@@ -11,8 +11,4 @@ internal class MangaModel
     public ImageModel? Cover { get; set; }
     
     public int PublisherId { get; set; }
-
-    public ICollection<GenreModel> Genres { get; set; }
-    
-    public ICollection<VolumeModel> Volumes { get; set; }
 }

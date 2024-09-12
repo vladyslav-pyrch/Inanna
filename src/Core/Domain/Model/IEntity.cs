@@ -2,9 +2,7 @@
 
 namespace Inanna.Core.Domain.Model;
 
-public interface IEntity<out TIdentity> where TIdentity : ValueObject, IIdentity
+public interface IEntity<out TIdentity> where TIdentity : AbstractIdentity
 {
     public TIdentity Identity { get; }
-    
-    public void PublishDomainEvents(IPublisher publisher);
 }

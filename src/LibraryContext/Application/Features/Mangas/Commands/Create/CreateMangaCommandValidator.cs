@@ -9,7 +9,6 @@ public class CreateMangaCommandValidator : AbstractValidator<CreateMangaCommand>
     public CreateMangaCommandValidator()
     {
         RuleFor(command => command.Title).NotEmpty().MaximumLength(100);
-        RuleFor(command => command.PublisherId).GreaterThanOrEqualTo(0);
         RuleFor(command => command.Genres).ForEach(element =>
         {
             element.NotEmpty().MaximumLength(20);
