@@ -5,13 +5,12 @@ using MongoDB.Driver;
 
 namespace Inanna.LibraryContext.Infrastructure.DataAccess;
 
-public class EventStore(IMongoClient client) : IEventStore
+public class EventStore(IMongoDatabase database) : IEventStore
 {
     public async Task<List<IDomainEvent<TIdentity>>> RetrieveEvents<TIdentity>(TIdentity aggregateRootId,
         CancellationToken cancellationToken = default) where TIdentity : AbstractIdentity
     {
-        IMongoCollection<StoredEvent> collection = client.GetDatabase("InannaEventStore")
-            .GetCollection<StoredEvent>("Events");
+        IMongoCollection<StoredEvent> collection = database.GetCollection<StoredEvent>("Events");
         IAsyncCursor<StoredEvent> cursor = await collection.FindAsync(@event => @event.AggregateRootId == aggregateRootId,
             cancellationToken: cancellationToken);
         List<StoredEvent> stagedEvents = await cursor.ToListAsync(cancellationToken: cancellationToken); 
@@ -24,10 +23,9 @@ public class EventStore(IMongoClient client) : IEventStore
     public async Task AppendEvent<TIdentity>(IDomainEvent<TIdentity> domainEvent,
         CancellationToken cancellationToken = default) where TIdentity : AbstractIdentity
     {
-        IMongoCollection<StoredEvent> collection = client.GetDatabase("InannaEventStore")
-            .GetCollection<StoredEvent>("Events");
+        IMongoCollection<StoredEvent> collection = database.GetCollection<StoredEvent>("Events");
 
-        int position = Sequence.GetNextSequenceValue("Events", client.GetDatabase("InannaEventStore"));
+        int position = Sequence.GetNextSequenceValue("Events", database);
 
         var storedEvent = new StoredEvent
         {

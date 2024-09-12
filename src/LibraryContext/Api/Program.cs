@@ -1,7 +1,7 @@
 using Inanna.LibraryContext.Api.Services;
 using Inanna.LibraryContext.Application;
 using Inanna.LibraryContext.Infrastructure;
-using Inanna.LibraryContext.Application.DataAccess;
+using Inanna.LibraryContext.Infrastructure.DataAccess.Mangas.Projections;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +23,7 @@ WebApplication app = builder.Build();
 
 using (IServiceScope serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 {
-    var context = serviceScope.ServiceProvider.GetRequiredService<LibraryDbContext>();
+    var context = serviceScope.ServiceProvider.GetRequiredService<MangasProjectionsDbContext>();
     context.Database.EnsureCreated();
 }
 

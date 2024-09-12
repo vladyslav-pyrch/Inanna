@@ -1,15 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Inanna.Core.Messaging;
-using Inanna.LibraryContext.Application.DataAccess;
+﻿using Inanna.Core.Messaging;
 using Inanna.LibraryContext.Domain.Model.Mangas;
 using Inanna.LibraryContext.Domain.Model.Shared;
-using Inanna.LibraryContext.Application.DataAccess.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inanna.LibraryContext.Application.Features.Mangas.Commands.Create;
 
-public class CreateMangaCommandHandler(IPublisher publisher, IMangaRepository mangaRepository, IFileService fileService)
+public class CreateMangaCommandHandler(IPublisher publisher, IFileService fileService)
     : ICommandHandler<CreateMangaCommand, MangaId>
 {
     public async Task<MangaId> Handle(CreateMangaCommand request, CancellationToken cancellationToken)
@@ -27,10 +23,8 @@ public class CreateMangaCommandHandler(IPublisher publisher, IMangaRepository ma
             manga.ChangeCover(new Image(imagePath, request.CoverImageContentType));
         }
         
-        manga.PublishDomainEvents(publisher);
+        await manga.PublishDomainEvents(publisher);
 
-        var anotherManga = await mangaRepository.GetById(manga.Identity, cancellationToken);
-        
-        return anotherManga.Identity;
+        return manga.Identity;
     }
 }

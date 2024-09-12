@@ -7,10 +7,10 @@ public abstract class AggregateRoot<TIdentity> : Entity<TIdentity>, IAggregateRo
 {
     private readonly Queue<IDomainEvent<TIdentity>> _domainEvents = [];
     
-    public void PublishDomainEvents(IPublisher publisher)
+    public async Task PublishDomainEvents(IPublisher publisher)
     {
         while(_domainEvents.TryDequeue(out IDomainEvent<TIdentity>? domainEvent))
-            publisher.Publish(domainEvent).Wait();
+            await publisher.Publish(domainEvent);
     }
 
     public virtual void Evolve(IEnumerable<IDomainEvent<TIdentity>> domainEvents)
