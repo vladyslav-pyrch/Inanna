@@ -8,5 +8,5 @@ public class PageProjection : IProjection
     
     public ImageProjection Image { get; set; }
     
-    public Guid? ChapterId { get; set; }
+    public Guid ChapterId { get; set; }
 }

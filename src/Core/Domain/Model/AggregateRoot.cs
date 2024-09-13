@@ -5,29 +5,29 @@ namespace Inanna.Core.Domain.Model;
 public abstract class AggregateRoot<TIdentity> : Entity<TIdentity>, IAggregateRoot<TIdentity>
     where TIdentity : AbstractIdentity
 {
-    private readonly Queue<IDomainEvent<TIdentity>> _domainEvents = [];
+    private readonly Queue<IEvent<TIdentity>> _events = [];
     
     public async Task PublishDomainEvents(IPublisher publisher)
     {
-        while(_domainEvents.TryDequeue(out IDomainEvent<TIdentity>? domainEvent))
-            await publisher.Publish(domainEvent);
+        while(_events.TryDequeue(out IEvent<TIdentity>? @event))
+            await publisher.Publish(@event);
     }
 
-    public virtual void Evolve(IEnumerable<IDomainEvent<TIdentity>> domainEvents)
+    public virtual void Evolve(IEnumerable<IEvent<TIdentity>> events)
     {
-        foreach (IDomainEvent<TIdentity> domainEvent in domainEvents)
-            Evolve(domainEvent);
+        foreach (IEvent<TIdentity> @event in events)
+            Evolve(@event);
     }
 
-    protected abstract void Evolve(IDomainEvent<TIdentity> domainEvent);
+    protected abstract void Evolve(IEvent<TIdentity> domainEvent);
 
-    protected void Enqueue(IDomainEvent<TIdentity> domainEvent)
+    protected void Enqueue(IEvent<TIdentity> domainEvent)
     {
         BusynessRuleException.ThrowIfNull(domainEvent, "Domain event should not be equal to null");
 
         domainEvent.AggregateRootId = Identity;
         domainEvent.OccuredOn = DateTime.UtcNow;
         
-        _domainEvents.Enqueue(domainEvent);
+        _events.Enqueue(domainEvent);
     }
 }

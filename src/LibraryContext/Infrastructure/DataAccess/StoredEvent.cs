@@ -12,5 +12,5 @@ internal class StoredEvent
     
     public AbstractIdentity AggregateRootId { get; set; }
     
-    public IDomainEvent Event { get; set; }
+    public IEvent Event { get; set; }
 }

@@ -6,5 +6,5 @@ public interface IAggregateRoot<TIdentity> : IEntity<TIdentity> where TIdentity 
 {
     public Task PublishDomainEvents(IPublisher publisher);
     
-    public void Evolve(IEnumerable<IDomainEvent<TIdentity>> domainEvents);
+    public void Evolve(IEnumerable<IEvent<TIdentity>> events);
 }

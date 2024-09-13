@@ -14,8 +14,8 @@ public class VolumeProjectionsConfiguration : IEntityTypeConfiguration<VolumePro
             .ValueGeneratedNever();
 
         builder.Property(projection => projection.Title)
-            .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(100)
+            .IsRequired();
 
         builder.Property(projection => projection.Number)
             .IsRequired();
@@ -23,11 +23,13 @@ public class VolumeProjectionsConfiguration : IEntityTypeConfiguration<VolumePro
         builder.HasOne<MangaProjection>()
             .WithMany()
             .HasForeignKey(projection => projection.MangaId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.ClientCascade)
+            .IsRequired();
 
         builder.HasMany<ChapterProjection>()
             .WithOne()
             .HasForeignKey(projection => projection.VolumeId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.ClientCascade)
+            .IsRequired();
     }
 }

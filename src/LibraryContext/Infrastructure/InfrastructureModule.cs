@@ -1,4 +1,5 @@
 ﻿using Inanna.Core.Domain.Model;
+using Inanna.LibraryContext.Application.Features;
 using Inanna.LibraryContext.Application.Features.Mangas.Projections.Repositories;
 using Inanna.LibraryContext.Domain.Model.Mangas;
 using Inanna.LibraryContext.Domain.Model.Shared;
@@ -47,6 +48,7 @@ public static class InfrastructureModule
         services.AddScoped<IMangaProjectionsRepository, MangaProjectionsRepository>();
         services.AddScoped<IPageProjectionsRepository, PageProjectionsRepository>();
         services.AddScoped<IVolumeProjectionsRepository, VolumeProjectionsRepository>();
+        services.AddScoped(typeof(IProjectionsRepository<>), typeof(DefaultProjectionsRepository<>));
             
         services.AddSingleton<IFileService, FileService>(provider =>
         {

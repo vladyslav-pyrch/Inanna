@@ -7,7 +7,7 @@ namespace Inanna.LibraryContext.Infrastructure.DataAccess;
 
 public class EventStore(IMongoDatabase database) : IEventStore
 {
-    public async Task<List<IDomainEvent<TIdentity>>> RetrieveEvents<TIdentity>(TIdentity aggregateRootId,
+    public async Task<List<IEvent<TIdentity>>> RetrieveEvents<TIdentity>(TIdentity aggregateRootId,
         CancellationToken cancellationToken = default) where TIdentity : AbstractIdentity
     {
         IMongoCollection<StoredEvent> collection = database.GetCollection<StoredEvent>("Events");
@@ -16,11 +16,11 @@ public class EventStore(IMongoDatabase database) : IEventStore
         List<StoredEvent> stagedEvents = await cursor.ToListAsync(cancellationToken: cancellationToken); 
 
         return stagedEvents.OrderBy(@event => @event.Position)
-            .Select(@event => (IDomainEvent<TIdentity>)@event.Event)
+            .Select(@event => (IEvent<TIdentity>)@event.Event)
             .ToList();
     }
 
-    public async Task AppendEvent<TIdentity>(IDomainEvent<TIdentity> domainEvent,
+    public async Task AppendEvent<TIdentity>(IEvent<TIdentity> @event,
         CancellationToken cancellationToken = default) where TIdentity : AbstractIdentity
     {
         IMongoCollection<StoredEvent> collection = database.GetCollection<StoredEvent>("Events");
@@ -30,10 +30,10 @@ public class EventStore(IMongoDatabase database) : IEventStore
         var storedEvent = new StoredEvent
         {
             Id = Guid.NewGuid(),
-            AggregateRootId = domainEvent.AggregateRootId,
+            AggregateRootId = @event.AggregateRootId,
             Position = position,
-            OccuredOn = domainEvent.OccuredOn,
-            Event = domainEvent
+            OccuredOn = @event.OccuredOn,
+            Event = @event
         };
 
         await collection.InsertOneAsync(storedEvent, cancellationToken: cancellationToken);

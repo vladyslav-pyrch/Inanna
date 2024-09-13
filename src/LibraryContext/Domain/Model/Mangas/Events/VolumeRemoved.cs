@@ -2,4 +2,4 @@
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas.Events;
 
-public record VolumeRemoved(VolumeId VolumeId) : DomainEvent<MangaId>;
+public record VolumeRemoved(VolumeId VolumeId) : Event<MangaId>;

@@ -16,18 +16,19 @@ public class PageProjectionsConfiguration : IEntityTypeConfiguration<PageProject
         builder.Property(projection => projection.Number)
             .IsRequired();
 
-        builder.OwnsOne(projection => projection.Image, navigationBuilder2 =>
+        builder.OwnsOne(projection => projection.Image, navigationBuilder =>
         {
-            navigationBuilder2.Property(projection => projection.Path)
+            navigationBuilder.Property(projection => projection.Path)
                 .IsRequired();
-            navigationBuilder2.Property(projection => projection.ContentType)
+            navigationBuilder.Property(projection => projection.ContentType)
                 .IsRequired();
-            navigationBuilder2.WithOwner();
+            navigationBuilder.WithOwner();
         });
 
         builder.HasOne<ChapterProjection>()
             .WithMany()
             .HasForeignKey(projection => projection.ChapterId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.ClientCascade)
+            .IsRequired();
     }
 }

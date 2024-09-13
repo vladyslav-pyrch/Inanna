@@ -18,10 +18,12 @@ public class Manga : AggregateRoot<MangaId>
 
     public Manga() { }
 
-    public Manga(MangaId mangaId)
+    public Manga(MangaId mangaId, string title, State state)
     {
         Identity = mangaId;
-        Enqueue(new MangaCreated(mangaId));
+        Title = title;
+        State = state;
+        Enqueue(new MangaCreated(mangaId, title, state));
     }
     
     public string Title
@@ -119,9 +121,9 @@ public class Manga : AggregateRoot<MangaId>
         Enqueue(new GenreRemoved(genre));
     }
 
-    protected override void Evolve(IDomainEvent<MangaId> domainEvent)
+    protected override void Evolve(IEvent<MangaId> @event)
     {
-        switch (domainEvent)
+        switch (@event)
         {
             case MangaTitleChanged mangaTitleChanged:
                 Title = mangaTitleChanged.Title;

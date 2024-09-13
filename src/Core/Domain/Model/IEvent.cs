@@ -2,9 +2,9 @@
 
 namespace Inanna.Core.Domain.Model;
 
-public interface IDomainEvent : INotification; 
+public interface IEvent : INotification; 
 
-public interface IDomainEvent<TIdentity> : IDomainEvent where TIdentity : AbstractIdentity 
+public interface IEvent<TIdentity> : IEvent where TIdentity : AbstractIdentity 
 {
     public TIdentity AggregateRootId { get; internal set; }
     

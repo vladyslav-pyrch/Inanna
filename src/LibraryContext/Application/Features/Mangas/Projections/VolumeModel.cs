@@ -8,5 +8,5 @@ public class VolumeProjection : IProjection
     
     public string Number { get; set; }
     
-    public Guid? MangaId { get; set; }
+    public Guid MangaId { get; set; }
 }

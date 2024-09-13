@@ -2,4 +2,4 @@
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas.Events;
 
-public record MangaTitleChanged(string Title) : DomainEvent<MangaId>;
+public record MangaTitleChanged(string Title) : Event<MangaId>;

@@ -10,16 +10,15 @@ public class MangasProjectionsUnitOfWork(
     IGenreProjectionsRepository genreProjectionsRepository,
     IGenreToMangaProjectionsRepository genreToMangaProjectionsRepository)
 {
-    public IMangaProjectionsRepository MangaProjectionsRepository { get; } = mangaProjectionsRepository;
+    public IMangaProjectionsRepository MangaProjections { get; } = mangaProjectionsRepository;
 
-    public IVolumeProjectionsRepository VolumeProjectionsRepository { get; } = volumeProjectionsRepository;
+    public IVolumeProjectionsRepository VolumeProjections { get; } = volumeProjectionsRepository;
 
-    public IChapterProjectionsRepository ChapterProjectionsRepository { get; } = chapterProjectionsRepository;
+    public IChapterProjectionsRepository ChapterProjections { get; } = chapterProjectionsRepository;
 
-    public IPageProjectionsRepository PageProjectionsRepository { get; } = pageProjectionsRepository;
+    public IPageProjectionsRepository PageProjections { get; } = pageProjectionsRepository;
 
-    public IGenreProjectionsRepository GenreProjectionsRepository { get; } = genreProjectionsRepository;
+    public IGenreProjectionsRepository GenreProjections { get; } = genreProjectionsRepository;
 
-    public IGenreToMangaProjectionsRepository GenreToMangaProjectionsRepository { get; } =
-        genreToMangaProjectionsRepository;
+    public IGenreToMangaProjectionsRepository GenreToMangaProjections { get; } = genreToMangaProjectionsRepository;
 }

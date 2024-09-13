@@ -23,11 +23,13 @@ public class ChapterProjectionsConfiguration : IEntityTypeConfiguration<ChapterP
         builder.HasOne<VolumeProjection>()
             .WithMany()
             .HasForeignKey(projection => projection.VolumeId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.ClientCascade)
+            .IsRequired();
 
         builder.HasMany<PageProjection>()
             .WithOne()
             .HasForeignKey(projection => projection.ChapterId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.ClientCascade)
+            .IsRequired();
     }
 }

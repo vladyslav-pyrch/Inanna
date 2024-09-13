@@ -12,7 +12,7 @@ public class GenreProjectionsConfiguration : IEntityTypeConfiguration<GenreProje
 
         builder.Property(projection => projection.Name)
             .ValueGeneratedNever();
-        
+
         builder.Property(projection => projection.Name)
             .HasMaxLength(20)
             .IsRequired();

@@ -14,17 +14,18 @@ public class MangaProjectionsConfiguration : IEntityTypeConfiguration<MangaProje
             .ValueGeneratedNever();
 
         builder.Property(projection => projection.Title)
-            .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(100)
+            .IsRequired();
 
         builder.Property(projection => projection.State)
-            .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(20)
+            .IsRequired();
 
         builder.HasMany<VolumeProjection>()
             .WithOne()
             .HasForeignKey(projection => projection.MangaId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .OnDelete(DeleteBehavior.ClientCascade)
+            .IsRequired();
 
         builder.HasMany<GenreProjection>()
             .WithMany()
@@ -46,13 +47,7 @@ public class MangaProjectionsConfiguration : IEntityTypeConfiguration<MangaProje
                 })
             );
 
-        builder.OwnsOne(projection => projection.Cover, navigationBuilder =>
-        {
-            navigationBuilder.Property(projection => projection.Path)
-                .IsRequired();
-            navigationBuilder.Property(projection => projection.ContentType)
-                .IsRequired();
-            navigationBuilder.WithOwner();
-        });
+        builder.OwnsOne(projection => projection.Cover)
+            .WithOwner();
     }
 }
