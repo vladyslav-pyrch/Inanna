@@ -203,6 +203,8 @@ public class Manga : AggregateRoot<MangaId>
             $"Page number may not be 0 or negative: {pageNumber}");
         
         _volumes[volumeId].RemovePage(chapterId, pageNumber);
+        
+        Enqueue(new PageRemoved(volumeId, chapterId, pageNumber));
     }
 
     public void AddGenre(string genreName)
