@@ -19,15 +19,15 @@ public abstract class AggregateRoot<TIdentity> : Entity<TIdentity>, IAggregateRo
             Evolve(@event);
     }
 
-    protected abstract void Evolve(IEvent<TIdentity> domainEvent);
+    protected abstract void Evolve(IEvent<TIdentity> @event);
 
-    protected void Enqueue(IEvent<TIdentity> domainEvent)
+    protected void Enqueue(IEvent<TIdentity> @event)
     {
-        BusynessRuleException.ThrowIfNull(domainEvent, "Domain event should not be equal to null");
+        BusynessRuleException.ThrowIfNull(@event, "Domain event should not be equal to null");
 
-        domainEvent.AggregateRootId = Identity;
-        domainEvent.OccuredOn = DateTime.UtcNow;
+        @event.AggregateRootId = Identity;
+        @event.OccuredOn = DateTime.UtcNow;
         
-        _events.Enqueue(domainEvent);
+        _events.Enqueue(@event);
     }
 }

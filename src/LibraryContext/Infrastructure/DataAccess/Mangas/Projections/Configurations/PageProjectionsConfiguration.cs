@@ -8,10 +8,7 @@ public class PageProjectionsConfiguration : IEntityTypeConfiguration<PageProject
 {
     public void Configure(EntityTypeBuilder<PageProjection> builder)
     {
-        builder.HasKey(projection => projection.Id);
-
-        builder.Property(projection => projection.Id)
-            .ValueGeneratedNever();
+        builder.HasKey(projection => new { projection.Number, projection.ChapterId });
 
         builder.Property(projection => projection.Number)
             .IsRequired();

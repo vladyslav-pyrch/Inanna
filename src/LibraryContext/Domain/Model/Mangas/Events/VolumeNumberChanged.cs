@@ -2,4 +2,4 @@
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas.Events;
 
-public record GenreAdded(string GenreName) : Event<MangaId>;
+public record VolumeNumberChanged(VolumeId VolumeId, string Number) : Event<MangaId>;

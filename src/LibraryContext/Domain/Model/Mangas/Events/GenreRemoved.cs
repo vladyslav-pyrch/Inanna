@@ -2,4 +2,4 @@
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas.Events;
 
-public record GenreRemoved(Genre Genre) : Event<MangaId>;
+public record GenreRemoved(string GenreName) : Event<MangaId>;

@@ -2,8 +2,6 @@
 
 public class PageProjection : IProjection
 {
-    public Guid Id { get; set; }
-    
     public int Number { get; set; }
     
     public ImageProjection Image { get; set; }

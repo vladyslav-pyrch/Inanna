@@ -4,6 +4,7 @@ using Inanna.LibraryContext.Infrastructure.DataAccess.Mangas.Projections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Inanna.LibraryContext.Infrastructure.DataAccess.Mangas.Projections.Migrations
 {
     [DbContext(typeof(MangasProjectionsDbContext))]
-    partial class MangasProjectionsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240914115142_Page projection is reconfigured")]
+    partial class Pageprojectionisreconfigured
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

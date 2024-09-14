@@ -1,4 +1,5 @@
 ﻿using Inanna.Core.Domain.Model;
+using Inanna.LibraryContext.Domain.Model.Shared;
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
@@ -8,7 +9,7 @@ public class Chapter : Entity<ChapterId>
 
     private string _number;
     
-    private readonly List<Page> _pages = [];
+    private readonly Dictionary<int, Page> _pages = [];
 
     public Chapter(ChapterId identity, string title, string number)
     {
@@ -25,7 +26,7 @@ public class Chapter : Entity<ChapterId>
             ArgumentException.ThrowIfNullOrWhiteSpace(value);
 
             if (value.Length > 100)
-                throw new ArgumentException("Title cannot be longer than 100 characters.");
+                throw new ArgumentException($"Title cannot be longer than 100 characters: {value}");
 
             _title = value;
         }
@@ -36,13 +37,37 @@ public class Chapter : Entity<ChapterId>
         get => _number;
         private set
         {
-            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Chapter number cannot be null or white space.");
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, 
+                "Chapter number cannot be null or white space.");
             BusynessRuleException.ThrowIf(() => !MyRegexes.NumberRegex().IsMatch(value), 
-                "Number should be a positive integer or a positive decimal.");
+                $"Number should be a positive integer or a positive decimal: {value}");
             
             _number = value;
         }
     }
 
-    public IReadOnlyList<Page> Pages => _pages.AsReadOnly();
+    public IReadOnlyList<Page> Pages => _pages.Values.ToList().AsReadOnly();
+
+    internal void ChangeNumber(string newNumber) => Number = newNumber;
+
+    internal void ChangeTitle(string newTitle) => Title = newTitle;
+
+    internal void AddPage(int pageNumber, string imagePath, string imageContentType)
+    {
+        BusynessRuleException.ThrowIf(() => _pages.ContainsKey(pageNumber),
+            $"There already is a page with such number: {pageNumber}");
+        
+        var image = new Image(imagePath, imageContentType);
+        var page = new Page(pageNumber, image);
+        
+        _pages.Add(pageNumber, page);
+    }
+
+    internal void RemovePage(int pageNumber)
+    {
+        BusynessRuleException.ThrowIf(() => !_pages.ContainsKey(pageNumber),
+            $"There is not a page with such number: {pageNumber}");
+
+        _pages.Remove(pageNumber);
+    }
 }

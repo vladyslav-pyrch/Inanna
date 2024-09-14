@@ -13,7 +13,7 @@ public class CreateMangaCommandHandler(IPublisher publisher, IFileService fileSe
         var manga = new Manga(new MangaId(Guid.NewGuid()), request.Title, request.State);
         
         foreach (string genre in request.Genres ?? [])
-            manga.AddGenre(new Genre(genre));
+            manga.AddGenre(genre);
 
         if (request is { CoverImageBytes: not null, CoverImageContentType: not null })
         {
