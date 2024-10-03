@@ -6,7 +6,7 @@ using Inanna.LibraryContext.Domain.Model.Mangas.Events;
 
 namespace Inanna.LibraryContext.Application.Handlers.Mangas;
 
-public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
+public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork, IMangaRepository mangaRepository) :
     IEventHandler<MangaCreated, MangaId>,
     IEventHandler<MangaTitleChanged, MangaId>,
     IEventHandler<MangaCoverChanged, MangaId>,
@@ -38,7 +38,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(MangaTitleChanged mangaTitleChanged, CancellationToken cancellationToken)
     {
         MangaProjection? mangaProjection = await unitOfWork.MangaProjections
-            .Read(mangaTitleChanged.AggregateRootId.Value, cancellationToken);
+            .Read([mangaTitleChanged.AggregateRootId.Value], cancellationToken);
 
         if (mangaProjection is null)
             return;
@@ -51,7 +51,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(MangaCoverChanged mangaCoverChanged, CancellationToken cancellationToken)
     {
         MangaProjection? mangaProjection = await unitOfWork.MangaProjections
-            .Read(mangaCoverChanged.AggregateRootId.Value, cancellationToken);
+            .Read([mangaCoverChanged.AggregateRootId.Value], cancellationToken);
 
         if (mangaProjection is null)
             return;
@@ -71,7 +71,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(MangaStateChanged mangaStateChanged, CancellationToken cancellationToken)
     {
         MangaProjection? mangaProjection = await unitOfWork.MangaProjections
-            .Read(mangaStateChanged.AggregateRootId.Value, cancellationToken);
+            .Read([mangaStateChanged.AggregateRootId.Value], cancellationToken);
 
         if (mangaProjection is null)
             return;
@@ -84,13 +84,13 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(GenreAdded genreAdded, CancellationToken cancellationToken)
     {
         MangaProjection? mangaProjection = await unitOfWork.MangaProjections
-            .Read(genreAdded.AggregateRootId.Value, cancellationToken);
+            .Read([genreAdded.AggregateRootId.Value], cancellationToken);
 
         if (mangaProjection is null)
             return;
         
         GenreProjection? genreProjection = 
-            await unitOfWork.GenreProjections.Read(genreAdded.GenreName, cancellationToken);
+            await unitOfWork.GenreProjections.Read([genreAdded.GenreName], cancellationToken);
 
         if (genreProjection is null)
         {
@@ -110,29 +110,29 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(GenreRemoved genreRemoved, CancellationToken cancellationToken)
     {
         MangaProjection? mangaProjection = await unitOfWork.MangaProjections
-            .Read(genreRemoved.AggregateRootId.Value, cancellationToken);
+            .Read([genreRemoved.AggregateRootId.Value], cancellationToken);
 
         if (mangaProjection is null)
             return;
 
         GenreToMangaProjection? genreToMangaProjection = await unitOfWork.GenreToMangaProjections
-                .Read(new { mangaProjection.Id, genreRemoved.GenreName }, cancellationToken);
+                .Read( [mangaProjection.Id, genreRemoved.GenreName], cancellationToken);
         
         if (genreToMangaProjection is null)
             return;
 
         await unitOfWork.GenreToMangaProjections
-            .Delete(new { mangaProjection.Id, genreRemoved.GenreName }, cancellationToken);
+            .Delete([mangaProjection.Id, genreRemoved.GenreName], cancellationToken);
 
         if (!unitOfWork.GenreToMangaProjections.Query()
                 .Any(projection => projection.GenreName == genreRemoved.GenreName))
-            await unitOfWork.GenreProjections.Delete(genreRemoved.GenreName, cancellationToken);
+            await unitOfWork.GenreProjections.Delete([genreRemoved.GenreName], cancellationToken);
     }
 
     public async Task Handle(VolumeAdded volumeAdded, CancellationToken cancellationToken)
     {
         MangaProjection? mangaProjection = await unitOfWork.MangaProjections
-            .Read(volumeAdded.AggregateRootId.Value, cancellationToken);
+            .Read([volumeAdded.AggregateRootId.Value], cancellationToken);
 
         if (mangaProjection is null)
             return;
@@ -149,12 +149,12 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     }
 
     public async Task Handle(VolumeRemoved volumeRemoved, CancellationToken cancellationToken) => 
-        await unitOfWork.VolumeProjections.Delete(volumeRemoved.VolumeId.Value, cancellationToken);
+        await unitOfWork.VolumeProjections.Delete([volumeRemoved.VolumeId.Value], cancellationToken);
 
     public async Task Handle(ChapterAdded chapterAdded, CancellationToken cancellationToken)
     {
         VolumeProjection? volumeProjection = await unitOfWork.VolumeProjections
-            .Read(chapterAdded.VolumeId.Value, cancellationToken);
+            .Read([chapterAdded.VolumeId.Value], cancellationToken);
         
         if (volumeProjection is null)
             return;
@@ -172,13 +172,13 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
 
     public async Task Handle(ChapterRemoved chapterRemoved, CancellationToken cancellationToken)
     {
-        await unitOfWork.ChapterProjections.Delete(chapterRemoved.ChapterId, cancellationToken);
+        await unitOfWork.ChapterProjections.Delete([chapterRemoved.ChapterId], cancellationToken);
     }
 
     public async Task Handle(VolumeTitleChanged volumeTitleChanged, CancellationToken cancellationToken)
     {
         VolumeProjection? volumeProjection = await unitOfWork.VolumeProjections
-            .Read(volumeTitleChanged.VolumeId.Value, cancellationToken);
+            .Read([volumeTitleChanged.VolumeId.Value], cancellationToken);
         
         if (volumeProjection is null)
             return;
@@ -191,7 +191,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(VolumeNumberChanged volumeNumberChanged, CancellationToken cancellationToken)
     {
         VolumeProjection? volumeProjection = await unitOfWork.VolumeProjections
-            .Read(volumeNumberChanged.VolumeId.Value, cancellationToken);
+            .Read([volumeNumberChanged.VolumeId.Value], cancellationToken);
         
         if (volumeProjection is null)
             return;
@@ -204,7 +204,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(ChapterTitleChanged chapterTitleChanged, CancellationToken cancellationToken)
     {
         ChapterProjection? chapterProjection = await unitOfWork.ChapterProjections
-            .Read(chapterTitleChanged.ChapterId.Value, cancellationToken);
+            .Read([chapterTitleChanged.ChapterId.Value], cancellationToken);
         
         if (chapterProjection is null)
             return;
@@ -217,7 +217,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
     public async Task Handle(ChapterNumberChanged chapterNumberChanged, CancellationToken cancellationToken)
     {
         ChapterProjection? chapterProjection = await unitOfWork.ChapterProjections
-            .Read(chapterNumberChanged.ChapterId.Value, cancellationToken);
+            .Read([chapterNumberChanged.ChapterId.Value], cancellationToken);
         
         if (chapterProjection is null)
             return;
@@ -243,8 +243,8 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork) :
         await unitOfWork.PageProjections.Create(pageProjection, cancellationToken);
     }
 
-    public Task Handle(PageRemoved notification, CancellationToken cancellationToken)
+    public async Task Handle(PageRemoved notification, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await unitOfWork.PageProjections.Delete([notification.PageNumber, notification.ChapterId], cancellationToken);
     }
 }

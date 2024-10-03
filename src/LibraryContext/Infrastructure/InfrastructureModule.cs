@@ -21,6 +21,7 @@ public static class InfrastructureModule
 {
     public static void AddInfrastructureModule(this IServiceCollection services)
     {
+        BsonSerializer.RegisterSerializer(new ObjectSerializer(ObjectSerializer.AllAllowedTypes));
         services.AddScoped<IMangaRepository, MangasRepository>();
         
         services.AddScoped<IEventStore, EventStore>();
@@ -29,7 +30,6 @@ public static class InfrastructureModule
             var configuration = provider.GetRequiredService<IConfiguration>();
             string mongoDbConnectionString =
                 configuration.GetConnectionString("EventsDb") ?? throw new Exception("No connection string with the name: EventsDb");
-            BsonSerializer.RegisterSerializer(new ObjectSerializer(ObjectSerializer.AllAllowedTypes));
             var client = new MongoClient(mongoDbConnectionString);
             var sequence = new EventStore.Sequence();
             sequence.Insert(client.GetDatabase("InannaEventStore"));

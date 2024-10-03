@@ -8,5 +8,4 @@ public interface IEventStore
 
     public Task AppendEvent<TIdentity>(IEvent<TIdentity> @event, CancellationToken cancellationToken = default)
         where TIdentity : AbstractIdentity;
-
 }

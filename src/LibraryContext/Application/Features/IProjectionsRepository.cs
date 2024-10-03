@@ -25,11 +25,11 @@ public interface IProjectionsRepository<TProjection> where TProjection : IProjec
     /// </summary>
     /// <param name="projectionId">The id of a projection to read</param>
     /// <returns>A tracking projection instance or null</returns>
-    public Task<TProjection?> Read(object projectionId, CancellationToken cancellationToken = default);
+    public Task<TProjection?> Read(object[] projectionId, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Deletes an existing projection by id
     /// </summary>
     /// <param name="projectionId">The id of a projection to delete</param>
-    public Task Delete(object projectionId, CancellationToken cancellationToken = default);
+    public Task Delete(object[] projectionId, CancellationToken cancellationToken = default);
 }

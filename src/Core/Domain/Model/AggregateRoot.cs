@@ -7,7 +7,7 @@ public abstract class AggregateRoot<TIdentity> : Entity<TIdentity>, IAggregateRo
 {
     private readonly Queue<IEvent<TIdentity>> _events = [];
     
-    public async Task PublishDomainEvents(IPublisher publisher)
+    public async Task PublishEvents(IPublisher publisher)
     {
         while(_events.TryDequeue(out IEvent<TIdentity>? @event))
             await publisher.Publish(@event);

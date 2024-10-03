@@ -22,7 +22,8 @@ public class Volume : Entity<VolumeId>
         get => _title;
         private set
         {
-            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Volume title cannot be null or white space.");
+            BusynessRuleException.ThrowIfNullOrWhiteSpace(value, 
+                "Volume title cannot be null or white space.");
             BusynessRuleException.ThrowIfLongerThan(value, 100, 
                 $"Volume title cannot be longer than 100 characters: {value}");
 

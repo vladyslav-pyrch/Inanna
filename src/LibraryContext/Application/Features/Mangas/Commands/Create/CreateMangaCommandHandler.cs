@@ -21,7 +21,7 @@ public class CreateMangaCommandHandler(IPublisher publisher, IFileService fileSe
             manga.ChangeCover(new Image(imagePath, request.CoverImageContentType));
         }
         
-        await manga.PublishDomainEvents(publisher);
+        await manga.PublishEvents(publisher);
 
         return manga.Identity;
     }
