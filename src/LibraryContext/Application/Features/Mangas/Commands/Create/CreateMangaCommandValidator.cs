@@ -8,12 +8,17 @@ public class CreateMangaCommandValidator : AbstractValidator<CreateMangaCommand>
 {
     public CreateMangaCommandValidator()
     {
-        RuleFor(command => command.Title).NotEmpty().MaximumLength(100);
+        RuleFor(command => command.Title).NotEmpty()
+            .HaveMatchWithRegex(MyRegexes.Trimmed())
+            .MaximumLength(100);
         RuleFor(command => command.Genres).ForEach(element =>
         {
-            element.NotEmpty().MaximumLength(20);
+            element.NotEmpty()
+                .HaveMatchWithRegex(MyRegexes.Trimmed())
+                .MaximumLength(20);
         });
         RuleFor(command => command.CoverImageContentType)
+            .HaveMatchWithRegex(MyRegexes.Trimmed())
             .HaveMatchWithRegex(MyRegexes.ImageContentTypeRegex())
             .IsNotNullWhenNotNull(command => command.CoverImageBytes);
         RuleFor(command => command.CoverImageBytes)

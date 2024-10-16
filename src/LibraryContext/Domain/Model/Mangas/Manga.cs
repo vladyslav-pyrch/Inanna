@@ -22,7 +22,7 @@ public class Manga : AggregateRoot<MangaId>
     public Manga(MangaId mangaId, string title, State state)
     {
         Identity = mangaId;
-        Title = title.Trim();
+        Title = title;
         State = state;
         Enqueue(new MangaCreated(mangaId, title, state));
     }
@@ -36,6 +36,8 @@ public class Manga : AggregateRoot<MangaId>
                 "Title should not be null or white space");
             BusynessRuleException.ThrowIfLongerThan(value, 100,
                 $"Title cannot be longer than 100 characters: {value}");
+            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+                "The title should be trimmed");
 
             _title = value;
         }
@@ -57,13 +59,11 @@ public class Manga : AggregateRoot<MangaId>
 
     public IReadOnlyList<Genre> Genres => _genres.AsReadOnly();
 
-    public void ChangeTitle(string newTitle)
+    public void ChangeTitle(string title)
     {
-        string titleTrimmed = newTitle.Trim();
+        Title = title;
         
-        Title = titleTrimmed;
-        
-        Enqueue(new MangaTitleChanged(titleTrimmed));
+        Enqueue(new MangaTitleChanged(title));
     }
 
     public void ChangeCover(Image newCover)
@@ -82,18 +82,16 @@ public class Manga : AggregateRoot<MangaId>
 
     public void AddVolume(VolumeId volumeId, string title, string number)
     {
-        string titleTrimmed = title.Trim();
-        string numberTrimmed = number.Trim();
-        var volume = new Volume(volumeId, titleTrimmed, numberTrimmed);
+        var volume = new Volume(volumeId, title, number);
         
         BusynessRuleException.ThrowIf(() => _volumes.ContainsKey(volumeId),
             $"There already is a volume with such an id: {volumeId.Value}");
-        BusynessRuleException.ThrowIf(() => _volumes.Values.Any(volume1 => volume1.Number == numberTrimmed),
-            $"There already is a volume with such a number: {numberTrimmed}");
+        BusynessRuleException.ThrowIf(() => _volumes.Values.Any(volume1 => volume1.Number == number),
+            $"There already is a volume with such a number: {number}");
         
         _volumes.Add(volumeId, volume);
         
-        Enqueue(new VolumeAdded(volumeId, titleTrimmed, numberTrimmed));
+        Enqueue(new VolumeAdded(volumeId, title, number));
     }
 
     public void RemoveVolume(VolumeId volumeId)
@@ -110,40 +108,33 @@ public class Manga : AggregateRoot<MangaId>
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
-
-        string titleTrimmed = title.Trim();
         
-        _volumes[volumeId].ChangeTitle(titleTrimmed);
+        _volumes[volumeId].ChangeTitle(title);
         
-        Enqueue(new VolumeTitleChanged(volumeId, titleTrimmed));
+        Enqueue(new VolumeTitleChanged(volumeId, title));
     }
 
     public void ChangeVolumeNumber(VolumeId volumeId, string number)
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
-
-        string numberTrimmed = number.Trim();
         
-        BusynessRuleException.ThrowIf(() => _volumes.Values.Any(volume1 => volume1.Number == numberTrimmed),
-            $"There is a volume with such a number: {numberTrimmed}");
+        BusynessRuleException.ThrowIf(() => _volumes.Values.Any(volume1 => volume1.Number == number),
+            $"There is a volume with such a number: {number}");
         
-        _volumes[volumeId].ChangeNumber(numberTrimmed);
+        _volumes[volumeId].ChangeNumber(number);
         
-        Enqueue(new VolumeNumberChanged(volumeId, numberTrimmed));
+        Enqueue(new VolumeNumberChanged(volumeId, number));
     }
 
     public void AddChapter(VolumeId volumeId, ChapterId chapterId, string title, string number)
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
-
-        string titleTrimmed = title.Trim();
-        string numberTrimmed = number.Trim();
         
-        _volumes[volumeId].AddChapter(chapterId, titleTrimmed, numberTrimmed);
+        _volumes[volumeId].AddChapter(chapterId, title, number);
         
-        Enqueue(new ChapterAdded(volumeId, chapterId, titleTrimmed, numberTrimmed));
+        Enqueue(new ChapterAdded(volumeId, chapterId, title, number));
     }
 
     public void RemoveChapter(VolumeId volumeId, ChapterId chapterId)
@@ -160,24 +151,20 @@ public class Manga : AggregateRoot<MangaId>
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
-
-        string titleTrimmed = title.Trim();
         
-        _volumes[volumeId].ChangeChapterTitle(chapterId, titleTrimmed);
+        _volumes[volumeId].ChangeChapterTitle(chapterId, title);
         
-        Enqueue(new ChapterTitleChanged(volumeId, chapterId, titleTrimmed));
+        Enqueue(new ChapterTitleChanged(volumeId, chapterId, title));
     }
 
     public void ChangeChapterNumber(VolumeId volumeId, ChapterId chapterId, string number)
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
-
-        string numberTrimmed = number.Trim();
         
-        _volumes[volumeId].ChangeChapterNumber(chapterId, numberTrimmed);
+        _volumes[volumeId].ChangeChapterNumber(chapterId, number);
         
-        Enqueue(new ChapterNumberChanged(volumeId, chapterId, numberTrimmed));
+        Enqueue(new ChapterNumberChanged(volumeId, chapterId, number));
     }
 
     public void AddPage(VolumeId volumeId, ChapterId chapterId, int pageNumber, string imagePath,
@@ -187,13 +174,10 @@ public class Manga : AggregateRoot<MangaId>
             $"There is no volume with such id: {volumeId.Value}");
         BusynessRuleException.ThrowIf(() => pageNumber <= 0, 
             $"Page number may not be 0 or negative: {pageNumber}");
-
-        string imagePathTrimmed = imagePath.Trim();
-        string imageContentTypeTrimmed = imageContentType.Trim();
         
-        _volumes[volumeId].AddPage(chapterId, pageNumber, imagePathTrimmed, imageContentTypeTrimmed);
+        _volumes[volumeId].AddPage(chapterId, pageNumber, imagePath, imageContentType);
         
-        Enqueue(new PageAdded(volumeId, chapterId, pageNumber, imagePathTrimmed, imageContentTypeTrimmed));
+        Enqueue(new PageAdded(volumeId, chapterId, pageNumber, imagePath, imageContentType));
     }
 
     public void RemovePage(VolumeId volumeId, ChapterId chapterId, int pageNumber)
@@ -210,30 +194,26 @@ public class Manga : AggregateRoot<MangaId>
 
     public void AddGenre(string genreName)
     {
-        string genreNameTrimmed = genreName.Trim();
-        
-        var genre = new Genre(genreNameTrimmed);
+        var genre = new Genre(genreName);
         
         BusynessRuleException.ThrowIf(() => _genres.Contains(genre), 
-            $"The genre is already added: {genreNameTrimmed}");
+            $"The genre is already added: {genreName}");
         
         _genres.Add(genre);
         
-        Enqueue(new GenreAdded(genreNameTrimmed));
+        Enqueue(new GenreAdded(genreName));
     }
 
     public void RemoveGenre(string genreName)
     {
-        string genreNameTrimmed = genreName.Trim();
-
-        var genre = new Genre(genreNameTrimmed);
+        var genre = new Genre(genreName);
         
         BusynessRuleException.ThrowIf(() => !_genres.Contains(genre), 
-            $"There is no genre to delete: {genreNameTrimmed}");
+            $"There is no genre to delete: {genreName}");
         
         _genres.Remove(genre);
         
-        Enqueue(new GenreRemoved(genreNameTrimmed));
+        Enqueue(new GenreRemoved(genreName));
     }
 
     protected override void Evolve(IEvent<MangaId> @event)

@@ -8,7 +8,11 @@ public class AddChapterCommandValidator : AbstractValidator<AddChapterCommand>
 {
     public AddChapterCommandValidator()
     {
-        RuleFor(command => command.Title).NotEmpty().MaximumLength(100);
-        RuleFor(command => command.Number).NotEmpty().HaveMatchWithRegex(MyRegexes.NumberRegex());
+        RuleFor(command => command.Title).NotEmpty()
+            .HaveMatchWithRegex(MyRegexes.Trimmed())
+            .MaximumLength(100);
+        RuleFor(command => command.Number).NotEmpty()
+            .HaveMatchWithRegex(MyRegexes.Trimmed())
+            .HaveMatchWithRegex(MyRegexes.NumberRegex());
     }
 }

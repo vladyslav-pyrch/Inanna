@@ -2,17 +2,18 @@
 using Inanna.LibraryContext.Application.Validation;
 using Inanna.LibraryContext.Domain;
 
-namespace Inanna.LibraryContext.Application.Features.Mangas.Commands.Create;
+namespace Inanna.LibraryContext.Application.Features.Mangas.Commands.Update;
 
-public class AddVolumeCommandValidator : AbstractValidator<AddVolumeCommand>
+public class UpdateVolumeCommandValidator : AbstractValidator<UpdateVolumeCommand>
 {
-    public AddVolumeCommandValidator()
+    public UpdateVolumeCommandValidator()
     {
-        RuleFor(command => command.Title).NotEmpty()
+        RuleFor(command => command.Title)
             .HaveMatchWithRegex(MyRegexes.Trimmed())
             .MaximumLength(100);
-        RuleFor(command => command.Number).NotEmpty()
+        RuleFor(command => command.Number)
             .HaveMatchWithRegex(MyRegexes.Trimmed())
             .HaveMatchWithRegex(MyRegexes.NumberRegex());
+
     }
 }

@@ -9,4 +9,7 @@ public static partial class MyRegexes
 
     [GeneratedRegex(@"^image/[a-z]+$")]
     public static partial Regex ImageContentTypeRegex();
+
+    [GeneratedRegex("^[^\\s].*[^\\s]$")]
+    public static partial Regex Trimmed();
 }

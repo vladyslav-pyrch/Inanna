@@ -26,6 +26,8 @@ public class Volume : Entity<VolumeId>
                 "Volume title cannot be null or white space.");
             BusynessRuleException.ThrowIfLongerThan(value, 100, 
                 $"Volume title cannot be longer than 100 characters: {value}");
+            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+                "The title should be trimmed.");
 
             _title = value;
         }
@@ -39,6 +41,8 @@ public class Volume : Entity<VolumeId>
             BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Volume number cannot be null or white space.");
             BusynessRuleException.ThrowIf(() => !MyRegexes.NumberRegex().IsMatch(value), 
                 $"Number should be a positive integer or a positive decimal: {value}");
+            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+                "The number should be trimmed.");
 
             _number = value;
         }
