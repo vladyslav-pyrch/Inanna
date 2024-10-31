@@ -8,12 +8,15 @@ public class UpdateVolumeCommandHandler(IMangaRepository mangaRepository, IPubli
 {
     public async Task Handle(UpdateVolumeCommand request, CancellationToken cancellationToken)
     {
-        Manga manga = await mangaRepository.GetById(request.MangaId, cancellationToken);
+        var mangaId = new MangaId(request.MangaId);
+        var volumeId = new VolumeId(request.VolumeId);
+        
+        Manga manga = await mangaRepository.GetById(mangaId, cancellationToken);
         
         if (request is { Number:not null })
-            manga.ChangeVolumeNumber(request.VolumeId, request.Number);
+            manga.ChangeVolumeNumber(volumeId, request.Number);
         if (request is { Title:not null })
-            manga.ChangeVolumeTitle(request.VolumeId, request.Title);
+            manga.ChangeVolumeTitle(volumeId, request.Title);
 
         await manga.PublishEvents(publisher);
     }

@@ -10,7 +10,9 @@ public class CreateMangaCommandHandler(IPublisher publisher, IFileService fileSe
 {
     public async Task<MangaId> Handle(CreateMangaCommand request, CancellationToken cancellationToken)
     {
-        var manga = new Manga(new MangaId(Guid.NewGuid()), request.Title, request.State);
+        var state = Enum.Parse<State>(request.State);
+        var mangaId = new MangaId(Guid.NewGuid());
+        var manga = new Manga(mangaId, request.Title, state);
         
         foreach (string genre in request.Genres ?? [])
             manga.AddGenre(genre);

@@ -4,16 +4,15 @@ using MediatR;
 
 namespace Inanna.LibraryContext.Application.Features.Mangas.Commands.Delete;
 
-public class RemoveVolumeCommandHandler(IMangaRepository mangaRepository, IPublisher publisher) : ICommandHandler<RemoveVolumeCommand>
+public class RemoveGenreCommandHandler(IMangaRepository mangaRepository, IPublisher publisher) : ICommandHandler<RemoveGenreCommand>
 {
-    public async Task Handle(RemoveVolumeCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RemoveGenreCommand request, CancellationToken cancellationToken)
     {
         var mangaId = new MangaId(request.MangaId);
-        var volumeId = new VolumeId(request.VolumeId);
-        
+
         Manga manga = await mangaRepository.GetById(mangaId, cancellationToken);
         
-        manga.RemoveVolume(volumeId);
+        manga.RemoveGenre(request.Genre);
 
         await manga.PublishEvents(publisher);
     }

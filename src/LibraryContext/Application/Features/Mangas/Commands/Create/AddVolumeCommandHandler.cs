@@ -8,7 +8,8 @@ public class AddVolumeCommandHandler(IPublisher publisher, IMangaRepository mang
 {
     public async Task<VolumeId> Handle(AddVolumeCommand request, CancellationToken cancellationToken)
     {
-        Manga manga = await mangaRepository.GetById(request.MangaId, cancellationToken);
+        var mangaId = new MangaId(request.MangaId);   
+        Manga manga = await mangaRepository.GetById(mangaId, cancellationToken);
         var volumeId = new VolumeId(Guid.NewGuid());
         
         manga.AddVolume(volumeId, request.Title, request.Number);

@@ -239,6 +239,8 @@ public class Manga : AggregateRoot<MangaId>
             case MangaCreated mangaCreated:
                 Identity = mangaCreated.MangaId;
                 break;
+            case MangaDeleted mangaDeleted:
+                throw new BusynessRuleException($"Creating deleted object {mangaDeleted}");
             case VolumeAdded volumeAdded:
                 var volume = new Volume(volumeAdded.VolumeId, volumeAdded.Title, volumeAdded.Number);
                 _volumes.Add(volumeAdded.VolumeId, volume);

@@ -3,4 +3,5 @@ using Inanna.LibraryContext.Domain.Model.Mangas;
 
 namespace Inanna.LibraryContext.Application.Features.Mangas.Commands.Create;
 
-public record AddVolumeCommand(Guid MangaId, string Title, string Number) : ICommand<VolumeId>;
+public record AddPageCommand(Guid MangaId, Guid VolumeId, Guid ChapterId,
+    int PageNumber, byte[] ImageBytes, string ImageContentType) : ICommand;
