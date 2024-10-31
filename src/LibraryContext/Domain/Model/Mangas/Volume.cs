@@ -50,6 +50,8 @@ public class Volume : Entity<VolumeId>
 
     public IReadOnlyList<Chapter> Chapters => _chapters.Values.ToList().AsReadOnly();
 
+    public Chapter Chapter(ChapterId chapterId) => _chapters[chapterId];
+
     internal void ChangeTitle(string newTitle) => Title = newTitle;
 
     internal void ChangeNumber(string newNumber) => Number = newNumber;

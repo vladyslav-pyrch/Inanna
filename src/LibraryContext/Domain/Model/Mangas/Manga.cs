@@ -57,6 +57,8 @@ public class Manga : AggregateRoot<MangaId>
 
     public IReadOnlyList<Volume> Volumes => _volumes.Values.ToList().AsReadOnly();
 
+    public Volume Volume(VolumeId volumeId) => _volumes[volumeId];
+
     public IReadOnlyList<Genre> Genres => _genres.AsReadOnly();
 
     public void ChangeTitle(string title)

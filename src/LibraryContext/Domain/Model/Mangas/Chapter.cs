@@ -53,6 +53,8 @@ public class Chapter : Entity<ChapterId>
 
     public IReadOnlyList<Page> Pages => _pages.Values.ToList().AsReadOnly();
 
+    public Page Page(int number) => _pages[number];
+
     internal void ChangeNumber(string newNumber) => Number = newNumber;
 
     internal void ChangeTitle(string newTitle) => Title = newTitle;
