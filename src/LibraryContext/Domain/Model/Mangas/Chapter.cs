@@ -70,11 +70,8 @@ public class Chapter : Entity<ChapterId>
         _pages.Add(pageNumber, page);
     }
 
-    internal void RemovePage(int pageNumber)
+    internal bool RemovePage(int pageNumber)
     {
-        BusynessRuleException.ThrowIf(() => !_pages.ContainsKey(pageNumber),
-            $"There is not a page with such number: {pageNumber}");
-
-        _pages.Remove(pageNumber);
+        return _pages.Remove(pageNumber);
     }
 }

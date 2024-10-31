@@ -67,12 +67,9 @@ public class Volume : Entity<VolumeId>
         _chapters.Add(chapterId, chapter);
     }
 
-    internal void RemoveChapter(ChapterId chapterId)
+    internal bool RemoveChapter(ChapterId chapterId)
     {
-        BusynessRuleException.ThrowIf(() => !_chapters.ContainsKey(chapterId),
-            $"There is no chapter with such id: {chapterId.Value}");
-        
-        _chapters.Remove(chapterId);
+        return _chapters.Remove(chapterId);
     }
 
     internal void ChangeChapterTitle(ChapterId chapterId, string newTitle)
@@ -101,11 +98,11 @@ public class Volume : Entity<VolumeId>
         _chapters[chapterId].AddPage(pageNumber, imagePath, imageContentType);
     }
 
-    internal void RemovePage(ChapterId chapterId, int pageNumber)
+    internal bool RemovePage(ChapterId chapterId, int pageNumber)
     {
         BusynessRuleException.ThrowIf(() => !_chapters.ContainsKey(chapterId),
             $"There is no chapter with such id: {chapterId.Value}");
         
-        _chapters[chapterId].RemovePage(pageNumber);
+        return _chapters[chapterId].RemovePage(pageNumber);
     }
 }

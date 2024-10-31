@@ -1,7 +1,6 @@
 ﻿using Inanna.Core.Domain.Model;
 using Inanna.LibraryContext.Domain.Model.Mangas.Events;
 using Inanna.LibraryContext.Domain.Model.Shared;
-using Microsoft.VisualBasic;
 
 namespace Inanna.LibraryContext.Domain.Model.Mangas;
 
@@ -96,14 +95,14 @@ public class Manga : AggregateRoot<MangaId>
         Enqueue(new VolumeAdded(volumeId, title, number));
     }
 
-    public void RemoveVolume(VolumeId volumeId)
+    public bool RemoveVolume(VolumeId volumeId)
     {
-        BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
-            $"There is no volume with such id: {volumeId.Value}, to remove");
+       bool removed = _volumes.Remove(volumeId);
         
-        _volumes.Remove(volumeId);
-        
-        Enqueue(new VolumeRemoved(volumeId));
+       if (removed)
+            Enqueue(new VolumeRemoved(volumeId));
+
+       return removed;
     }
 
     public void ChangeVolumeTitle(VolumeId volumeId, string title)
@@ -139,14 +138,17 @@ public class Manga : AggregateRoot<MangaId>
         Enqueue(new ChapterAdded(volumeId, chapterId, title, number));
     }
 
-    public void RemoveChapter(VolumeId volumeId, ChapterId chapterId)
+    public bool RemoveChapter(VolumeId volumeId, ChapterId chapterId)
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
         
-        _volumes[volumeId].RemoveChapter(chapterId);
+        bool removed = _volumes[volumeId].RemoveChapter(chapterId);
         
-        Enqueue(new ChapterRemoved(volumeId, chapterId));
+        if (removed)
+            Enqueue(new ChapterRemoved(volumeId, chapterId));
+
+        return removed;
     }
 
     public void ChangeChapterTitle(VolumeId volumeId, ChapterId chapterId, string title)
@@ -182,16 +184,19 @@ public class Manga : AggregateRoot<MangaId>
         Enqueue(new PageAdded(volumeId, chapterId, pageNumber, imagePath, imageContentType));
     }
 
-    public void RemovePage(VolumeId volumeId, ChapterId chapterId, int pageNumber)
+    public bool RemovePage(VolumeId volumeId, ChapterId chapterId, int pageNumber)
     {
         BusynessRuleException.ThrowIf(() => !_volumes.ContainsKey(volumeId),
             $"There is no volume with such id: {volumeId.Value}");
         BusynessRuleException.ThrowIf(() => pageNumber <= 0, 
             $"Page number may not be 0 or negative: {pageNumber}");
         
-        _volumes[volumeId].RemovePage(chapterId, pageNumber);
+        bool removed = _volumes[volumeId].RemovePage(chapterId, pageNumber);
         
-        Enqueue(new PageRemoved(volumeId, chapterId, pageNumber));
+        if (removed)
+            Enqueue(new PageRemoved(volumeId, chapterId, pageNumber));
+
+        return removed;
     }
 
     public void AddGenre(string genreName)
@@ -206,16 +211,16 @@ public class Manga : AggregateRoot<MangaId>
         Enqueue(new GenreAdded(genreName));
     }
 
-    public void RemoveGenre(string genreName)
+    public bool RemoveGenre(string genreName)
     {
         var genre = new Genre(genreName);
         
-        BusynessRuleException.ThrowIf(() => !_genres.Contains(genre), 
-            $"There is no genre to delete: {genreName}");
+        bool removed = _genres.Remove(genre);
         
-        _genres.Remove(genre);
+        if (removed)
+            Enqueue(new GenreRemoved(genreName));
         
-        Enqueue(new GenreRemoved(genreName));
+        return removed; 
     }
 
     protected override void Evolve(IEvent<MangaId> @event)
