@@ -11,9 +11,6 @@ using Inanna.LibraryContext.Infrastructure.FileSystemAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
-using ObjectSerializer = MongoDB.Bson.Serialization.Serializers.ObjectSerializer;
 
 namespace Inanna.LibraryContext.Infrastructure;
 
@@ -21,25 +18,20 @@ public static class InfrastructureModule
 {
     public static void AddInfrastructureModule(this IServiceCollection services)
     {
-        BsonSerializer.RegisterSerializer(new ObjectSerializer(ObjectSerializer.AllAllowedTypes));
         services.AddScoped<IMangaRepository, MangasRepository>();
         
         services.AddScoped<IEventStore, EventStore>();
-        services.AddScoped<IMongoDatabase>(provider =>
-        {
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            string mongoDbConnectionString =
-                configuration.GetConnectionString("EventsDb") ?? throw new Exception("No connection string with the name: EventsDb");
-            var client = new MongoClient(mongoDbConnectionString);
-            var sequence = new EventStore.Sequence();
-            sequence.Insert(client.GetDatabase("InannaEventStore"));
-            return client.GetDatabase("InannaEventStore");
-        });
         
         services.AddDbContext<MangasProjectionsDbContext>((provider, optionsBuilder) =>
         {
             var configuration = provider.GetRequiredService<IConfiguration>();
             string connectionString = configuration.GetConnectionString("ProjectionsDb") ?? throw new NullReferenceException();
+            optionsBuilder.UseSqlServer(connectionString);
+        });
+        services.AddDbContext<EventStoreDbContext>((provider, optionsBuilder) =>
+        {
+            var configuration = provider.GetRequiredService<IConfiguration>();
+            string connectionString = configuration.GetConnectionString("EventsDb") ?? throw new NullReferenceException();
             optionsBuilder.UseSqlServer(connectionString);
         });
         services.AddScoped<IChapterProjectionsRepository, ChapterProjectionsRepository>();
