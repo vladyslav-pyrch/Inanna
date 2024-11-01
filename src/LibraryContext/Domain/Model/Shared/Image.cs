@@ -20,7 +20,7 @@ public record Image : ValueObject
         private init
         {
             BusynessRuleException.ThrowIfNullOrWhiteSpace(value, "Image path cannot be null or white space.");
-            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+            BusynessRuleException.ThrowIf(() => !MyRegexes.Trimmed().IsMatch(value),
                 "The image path should be trimmed.");
 
             _path = value;
@@ -36,7 +36,7 @@ public record Image : ValueObject
                 "Image content type cannot be null or white space.");
             BusynessRuleException.ThrowIf(() => !MyRegexes.ImageContentTypeRegex().IsMatch(value), 
                 "Image content type should be of format \"image/[smth]\"");
-            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+            BusynessRuleException.ThrowIf(() => !MyRegexes.Trimmed().IsMatch(value),
                 "The image content type should be trimmed.");
 
             _contentType = value;

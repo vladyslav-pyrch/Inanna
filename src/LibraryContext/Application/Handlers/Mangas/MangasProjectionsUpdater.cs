@@ -11,6 +11,7 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork, IM
     IEventHandler<MangaTitleChanged, MangaId>,
     IEventHandler<MangaCoverChanged, MangaId>,
     IEventHandler<MangaStateChanged, MangaId>,
+    IEventHandler<MangaDeleted, MangaId>,
     IEventHandler<GenreAdded, MangaId>,
     IEventHandler<GenreRemoved, MangaId>,
     IEventHandler<VolumeAdded, MangaId>,
@@ -243,8 +244,13 @@ public class MangasProjectionsUpdater(MangasProjectionsUnitOfWork unitOfWork, IM
         await unitOfWork.PageProjections.Create(pageProjection, cancellationToken);
     }
 
-    public async Task Handle(PageRemoved notification, CancellationToken cancellationToken)
+    public async Task Handle(PageRemoved pageRemoved, CancellationToken cancellationToken)
     {
-        await unitOfWork.PageProjections.Delete([notification.PageNumber, notification.ChapterId], cancellationToken);
+        await unitOfWork.PageProjections.Delete([pageRemoved.PageNumber, pageRemoved.ChapterId], cancellationToken);
+    }
+
+    public async Task Handle(MangaDeleted mangaDeleted, CancellationToken cancellationToken)
+    {
+        await unitOfWork.MangaProjections.Delete([mangaDeleted.MangaId.Value], cancellationToken);
     }
 }

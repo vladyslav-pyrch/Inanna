@@ -26,7 +26,7 @@ public class Chapter : Entity<ChapterId>
             
             BusynessRuleException.ThrowIfNullOrWhiteSpace(value, 
                 "Chapter title cannot be null or white space.");
-            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+            BusynessRuleException.ThrowIf(() => !MyRegexes.Trimmed().IsMatch(value),
                 "The title should be trimmed.");
             BusynessRuleException.ThrowIfLongerThan(value, 100,
                 $"Title cannot be longer than 100 characters: {value}");
@@ -44,7 +44,7 @@ public class Chapter : Entity<ChapterId>
                 "Chapter number cannot be null or white space.");
             BusynessRuleException.ThrowIf(() => !MyRegexes.NumberRegex().IsMatch(value), 
                 $"Number should be a positive integer or a positive decimal: {value}");
-            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+            BusynessRuleException.ThrowIf(() => !MyRegexes.Trimmed().IsMatch(value),
                 "The number should be trimmed");
             
             _number = value;

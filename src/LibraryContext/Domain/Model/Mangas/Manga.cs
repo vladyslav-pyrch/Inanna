@@ -35,7 +35,7 @@ public class Manga : AggregateRoot<MangaId>
                 "Title should not be null or white space");
             BusynessRuleException.ThrowIfLongerThan(value, 100,
                 $"Title cannot be longer than 100 characters: {value}");
-            BusynessRuleException.ThrowIf(() => MyRegexes.Trimmed().IsMatch(value),
+            BusynessRuleException.ThrowIf(() => !MyRegexes.Trimmed().IsMatch(value),
                 "The title should be trimmed");
 
             _title = value;
